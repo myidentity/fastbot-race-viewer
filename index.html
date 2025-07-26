@@ -636,7 +636,10 @@
                         const now = Date.now();
                         const frameTime = frameData.timestamp * 1000;
                         const delay = now - frameTime;
-                        document.getElementById('video-delay').textContent = Math.round(delay);
+                        const videoDelayElement = document.getElementById('video-delay');
+                        if (videoDelayElement) {
+                            videoDelayElement.textContent = Math.round(delay);
+                        }
                     }
                 });
 
