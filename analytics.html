@@ -656,13 +656,23 @@
                 () => {
                     // Delete from Firebase
                     const sessionRef = ref(database, `race_sessions/${sessionId}`);
-                    const dailyDate = new Date(sessions[sessionId].start_time * 1000).toISOString().split('T')[0];
-                    const dailyRef = ref(database, `daily_sessions/${dailyDate}/${sessionId}`);
                     
-                    Promise.all([
-                        sessionRef.remove(),
-                        dailyRef.remove()
-                    ]).then(() => {
+                    // Handle sessions with invalid or missing timestamps
+                    const promises = [sessionRef.remove()];
+                    
+                    // Only try to delete from daily_sessions if we have a valid timestamp
+                    const sessionData = sessions[sessionId];
+                    if (sessionData && sessionData.start_time && sessionData.start_time > 0) {
+                        try {
+                            const dailyDate = new Date(sessionData.start_time * 1000).toISOString().split('T')[0];
+                            const dailyRef = ref(database, `daily_sessions/${dailyDate}/${sessionId}`);
+                            promises.push(dailyRef.remove());
+                        } catch (e) {
+                            console.warn('Could not delete from daily_sessions due to invalid timestamp');
+                        }
+                    }
+                    
+                    Promise.all(promises).then(() => {
                         console.log(`Deleted session ${sessionId}`);
                         loadAnalytics(); // Reload data
                     }).catch(error => {
