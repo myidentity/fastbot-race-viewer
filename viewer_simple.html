@@ -93,6 +93,16 @@
         </div>
 
         <div class="telemetry-card">
+            <h2>Live Video Feed (4Hz)</h2>
+            <div style="text-align: center;">
+                <img id="video-feed" width="320" height="240" style="border: 1px solid #ccc; background: #000;">
+                <div style="margin-top: 5px; font-size: 12px; color: #666;">
+                    <span id="video-fps">0</span> FPS | <span id="video-delay">0</span>ms delay
+                </div>
+            </div>
+        </div>
+
+        <div class="telemetry-card">
             <h2>Race Commentary</h2>
             <div class="race-commentary" id="commentary">
                 Waiting for race data...
@@ -134,6 +144,35 @@ Waiting for connection...
             const data = snapshot.val();
             if (data) {
                 updateTelemetry(data);
+            }
+        });
+
+        // Listen for video frames
+        const videoRef = ref(database, 'robots/race_monitor/video_frame');
+        let frameCount = 0;
+        let lastFrameTime = Date.now();
+        let fpsTimer = setInterval(() => {
+            const fps = frameCount;
+            frameCount = 0;
+            document.getElementById('video-fps').textContent = fps;
+        }, 1000);
+
+        onValue(videoRef, (snapshot) => {
+            const frameData = snapshot.val();
+            if (frameData && frameData.image) {
+                // Update video feed
+                const img = document.getElementById('video-feed');
+                img.src = 'data:image/jpeg;base64,' + frameData.image;
+                
+                // Calculate delay
+                const now = Date.now();
+                const frameTime = frameData.timestamp * 1000; // Convert to ms
+                const delay = now - frameTime;
+                document.getElementById('video-delay').textContent = Math.round(delay);
+                
+                // Count frames for FPS
+                frameCount++;
+                lastFrameTime = now;
             }
         });
 
