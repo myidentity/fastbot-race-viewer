@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🏁 FastBot Race Analytics Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #001122 0%, #003366 30%, #1a4d6b 60%, #2e5f7a 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, rgba(0, 17, 34, 0.95) 0%, rgba(0, 51, 102, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #FFD700;
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5em;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, #FFD700, #FFF, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .analytics-card {
+            background: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.08) 0%, 
+                rgba(0, 51, 102, 0.15) 30%, 
+                rgba(0, 17, 34, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            padding: 25px;
+            margin: 15px 0;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .analytics-card h2 {
+            margin: 0 0 20px 0;
+            font-family: 'Orbitron', monospace;
+            color: #FFD700;
+            font-size: 1.5em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #87CEEB;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #FFD700;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .session-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        
+        .session-item {
+            background: rgba(135, 206, 235, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #87CEEB;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .session-item:hover {
+            background: rgba(135, 206, 235, 0.2);
+            border-left-color: #FFD700;
+        }
+        
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .session-id {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            color: #FFD700;
+        }
+        
+        .session-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-completed {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00FF00;
+            border: 1px solid #00FF00;
+        }
+        
+        .status-failed {
+            background: rgba(255, 0, 0, 0.2);
+            color: #FF4444;
+            border: 1px solid #FF4444;
+        }
+        
+        .session-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .detail-item {
+            text-align: center;
+        }
+        
+        .detail-label {
+            color: #87CEEB;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        
+        .detail-value {
+            color: #ffffff;
+            font-weight: 600;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #87CEEB;
+            font-size: 18px;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #FF4444;
+            font-size: 18px;
+        }
+        
+        .refresh-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #001122;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .chart-placeholder {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px dashed rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            color: #87CEEB;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>📊</div>
+        <h1>FASTBOT RACE ANALYTICS</h1>
+        <div class="monaco-subtitle">Performance Analysis & Historical Data</div>
+    </div>
+    
+    <div class="container">
+        <!-- Overall Statistics -->
+        <div class="analytics-card">
+            <h2>📈 Overall Performance</h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Total Sessions</div>
+                    <div class="stat-value" id="total-sessions">-</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Best Lap Time</div>
+                    <div class="stat-value" id="best-lap-time">-</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Laps</div>
+                    <div class="stat-value" id="total-laps">-</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Success Rate</div>
+                    <div class="stat-value" id="success-rate">-</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Max Speed</div>
+                    <div class="stat-value" id="max-speed">-</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Racing Time</div>
+                    <div class="stat-value" id="total-racing-time">-</div>
+                </div>
+            </div>
+            <button class="refresh-btn" onclick="loadAnalytics()">🔄 Refresh Data</button>
+        </div>
+        
+        <!-- Recent Sessions -->
+        <div class="analytics-card">
+            <h2>🏁 Recent Race Sessions</h2>
+            <div id="sessions-container">
+                <div class="loading">Loading race sessions...</div>
+            </div>
+        </div>
+        
+        <!-- Performance Trends -->
+        <div class="analytics-card">
+            <h2>📊 Performance Trends</h2>
+            <div class="chart-placeholder">
+                <h3>Lap Time Progression</h3>
+                <p>Chart visualization coming soon...</p>
+                <p>Will show lap time improvements over sessions</p>
+            </div>
+        </div>
+        
+        <!-- Controller Comparison -->
+        <div class="analytics-card">
+            <h2>🎮 Controller Performance</h2>
+            <div class="chart-placeholder">
+                <h3>Controller Comparison</h3>
+                <p>Performance comparison between different controllers</p>
+                <p>(vision_hybrid_race, waypoint_follower, etc.)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Integration -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import { getDatabase, ref, get, onValue } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js';
+
+        let app = null;
+        let database = null;
+
+        function initFirebase() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyDRaKw_Yj8J_tvMR75Ejlkz5ASpyLQJotg",
+                authDomain: "summer-race-monitoring.firebaseapp.com",
+                databaseURL: "https://summer-race-monitoring-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "summer-race-monitoring"
+            };
+
+            try {
+                app = initializeApp(firebaseConfig);
+                database = getDatabase(app);
+                console.log("Firebase initialized for analytics");
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+                showError("Failed to connect to Firebase");
+            }
+        }
+
+        function formatTime(seconds) {
+            if (!seconds || seconds <= 0) return "-";
+            
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m ${secs}s`;
+            } else if (minutes > 0) {
+                return `${minutes}m ${secs}s`;
+            } else {
+                return `${secs}s`;
+            }
+        }
+
+        function formatLapTime(seconds) {
+            if (!seconds || seconds <= 0) return "-";
+            return `${seconds.toFixed(2)}s`;
+        }
+
+        async function loadAnalytics() {
+            if (!database) {
+                showError("Firebase not initialized");
+                return;
+            }
+
+            try {
+                // Load race sessions
+                const sessionsRef = ref(database, 'race_sessions');
+                const sessionsSnapshot = await get(sessionsRef);
+                
+                if (sessionsSnapshot.exists()) {
+                    const sessions = sessionsSnapshot.val();
+                    displaySessions(sessions);
+                    calculateOverallStats(sessions);
+                } else {
+                    showNoData("No race sessions found");
+                }
+                
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+                showError("Failed to load analytics data");
+            }
+        }
+
+        function calculateOverallStats(sessions) {
+            let totalSessions = 0;
+            let totalLaps = 0;
+            let bestLapTime = Infinity;
+            let maxSpeed = 0;
+            let totalRacingTime = 0;
+            let completedLaps = 0;
+            let attemptedLaps = 0;
+
+            Object.values(sessions).forEach(session => {
+                totalSessions++;
+                totalLaps += session.laps_completed || 0;
+                attemptedLaps += session.laps_attempted || 0;
+                completedLaps += session.laps_completed || 0;
+                totalRacingTime += session.total_duration || 0;
+                
+                if (session.max_speed && session.max_speed > maxSpeed) {
+                    maxSpeed = session.max_speed;
+                }
+                
+                if (session.best_lap_time && session.best_lap_time < bestLapTime) {
+                    bestLapTime = session.best_lap_time;
+                }
+            });
+
+            const successRate = attemptedLaps > 0 ? (completedLaps / attemptedLaps * 100) : 0;
+
+            // Update UI
+            document.getElementById('total-sessions').textContent = totalSessions;
+            document.getElementById('total-laps').textContent = totalLaps;
+            document.getElementById('best-lap-time').textContent = bestLapTime === Infinity ? "-" : formatLapTime(bestLapTime);
+            document.getElementById('max-speed').textContent = maxSpeed > 0 ? `${maxSpeed.toFixed(2)} m/s` : "-";
+            document.getElementById('total-racing-time').textContent = formatTime(totalRacingTime);
+            document.getElementById('success-rate').textContent = `${successRate.toFixed(1)}%`;
+        }
+
+        function displaySessions(sessions) {
+            const container = document.getElementById('sessions-container');
+            
+            // Sort sessions by start time (newest first)
+            const sortedSessions = Object.entries(sessions).sort(([,a], [,b]) => {
+                return (b.start_time || 0) - (a.start_time || 0);
+            });
+
+            if (sortedSessions.length === 0) {
+                showNoData("No race sessions found");
+                return;
+            }
+
+            let html = '';
+            sortedSessions.slice(0, 20).forEach(([sessionId, session]) => { // Show last 20 sessions
+                const startDate = new Date((session.start_time || 0) * 1000);
+                const statusClass = session.status === 'completed' ? 'status-completed' : 'status-failed';
+                
+                html += `
+                    <div class="session-item" onclick="showSessionDetails('${sessionId}')">
+                        <div class="session-header">
+                            <div class="session-id">${sessionId}</div>
+                            <div class="session-status ${statusClass}">${session.status || 'unknown'}</div>
+                        </div>
+                        <div class="session-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Date</div>
+                                <div class="detail-value">${startDate.toLocaleDateString()}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Time</div>
+                                <div class="detail-value">${startDate.toLocaleTimeString()}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Controller</div>
+                                <div class="detail-value">${session.controller_type || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Duration</div>
+                                <div class="detail-value">${formatTime(session.total_duration)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Laps</div>
+                                <div class="detail-value">${session.laps_completed || 0}/${session.laps_attempted || 0}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Best Lap</div>
+                                <div class="detail-value">${formatLapTime(session.best_lap_time)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Max Speed</div>
+                                <div class="detail-value">${session.max_speed ? session.max_speed.toFixed(2) + ' m/s' : '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Success Rate</div>
+                                <div class="detail-value">${session.success_rate ? session.success_rate.toFixed(1) + '%' : '-'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function showSessionDetails(sessionId) {
+            // For now, just log the session ID
+            // In the future, this could open a detailed view
+            console.log('Show details for session:', sessionId);
+            alert(`Session details for ${sessionId}\n\nDetailed view coming soon...`);
+        }
+
+        function showError(message) {
+            const container = document.getElementById('sessions-container');
+            container.innerHTML = `<div class="error">${message}</div>`;
+        }
+
+        function showNoData(message) {
+            const container = document.getElementById('sessions-container');
+            container.innerHTML = `<div class="loading">${message}</div>`;
+        }
+
+        // Make loadAnalytics available globally
+        window.loadAnalytics = loadAnalytics;
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            initFirebase();
+            loadAnalytics();
+        });
+    </script>
+</body>
+</html>
