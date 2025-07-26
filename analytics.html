@@ -870,27 +870,65 @@
                 `<li>Lap ${idx + 1}: ${time.toFixed(2)}s</li>`
             ).join('') : '<li>No lap data</li>';
             
+            // Calculate additional metrics
+            const durationInSeconds = session.total_duration || 0;
+            const avgSpeedKmh = session.max_speed ? (session.max_speed * 3.6).toFixed(1) : 'N/A';
+            const totalDistance = session.total_distance || 0;
+            const incidents = session.incidents ? session.incidents.length : 0;
+            
             detailsDialog.innerHTML = `
-                <h3 style="color: #FFD700; margin-bottom: 20px;">Session Details</h3>
+                <h3 style="color: #FFD700; margin-bottom: 20px;">📊 Session Details</h3>
                 <div style="text-align: left; color: #ffffff;">
-                    <p><strong>Session ID:</strong> ${sessionId}</p>
-                    <p><strong>Controller:</strong> ${session.controller_type || 'Unknown'}</p>
-                    <p><strong>Status:</strong> ${session.status || 'Unknown'}</p>
-                    <p><strong>Start Time:</strong> ${startTime ? startTime.toLocaleString() : 'Unknown'}</p>
-                    <p><strong>Duration:</strong> ${formatTime(session.total_duration || 0)}</p>
-                    <p><strong>Laps Completed:</strong> ${session.laps_completed || 0} / ${session.laps_attempted || 0}</p>
-                    <p><strong>Success Rate:</strong> ${session.success_rate ? session.success_rate.toFixed(1) + '%' : 'N/A'}</p>
-                    <p><strong>Best Lap:</strong> ${session.best_lap_time ? session.best_lap_time.toFixed(2) + 's' : 'N/A'}</p>
-                    <p><strong>Average Lap:</strong> ${session.average_lap_time ? session.average_lap_time.toFixed(2) + 's' : 'N/A'}</p>
-                    <p><strong>Max Speed:</strong> ${session.max_speed ? session.max_speed.toFixed(2) + ' m/s' : 'N/A'}</p>
-                    ${session.notes ? `<p><strong>Notes:</strong> ${session.notes}</p>` : ''}
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <h4 style="color: #87CEEB; margin-bottom: 10px;">🏎️ Session Info</h4>
+                            <p><strong>Session ID:</strong> <span style="font-family: 'Orbitron', monospace; font-size: 12px;">${sessionId}</span></p>
+                            <p><strong>Controller:</strong> <span style="color: #FFD700;">${session.controller_type || 'Unknown'}</span></p>
+                            <p><strong>Status:</strong> <span class="session-status ${session.status === 'completed' ? 'status-completed' : session.status === 'active' ? 'status-active' : 'status-failed'}" style="display: inline-block; padding: 2px 8px;">${session.status || 'Unknown'}</span></p>
+                            <p><strong>Track:</strong> ${session.track_name || 'Monaco Circuit'}</p>
+                            <p><strong>Start Time:</strong> ${startTime ? startTime.toLocaleString() : 'Unknown'}</p>
+                            <p><strong>Duration:</strong> <span style="color: #FFD700; font-family: 'Orbitron', monospace;">${durationInSeconds.toFixed(1)} seconds</span></p>
+                        </div>
+                        
+                        <div>
+                            <h4 style="color: #87CEEB; margin-bottom: 10px;">📈 Performance Metrics</h4>
+                            <p><strong>Laps Completed:</strong> <span style="color: ${session.laps_completed > 0 ? '#00FF00' : '#FF4444'}">${session.laps_completed || 0}</span> / ${session.laps_attempted || 0}</p>
+                            <p><strong>Success Rate:</strong> ${session.success_rate ? `<span style="color: ${session.success_rate > 80 ? '#00FF00' : session.success_rate > 50 ? '#FFD700' : '#FF4444'}">${session.success_rate.toFixed(1)}%</span>` : 'N/A'}</p>
+                            <p><strong>Best Lap:</strong> ${session.best_lap_time ? `<span style="color: #00FF00; font-family: 'Orbitron', monospace;">${session.best_lap_time.toFixed(2)}s</span>` : 'No completed laps'}</p>
+                            <p><strong>Average Lap:</strong> ${session.average_lap_time ? `${session.average_lap_time.toFixed(2)}s` : 'N/A'}</p>
+                            <p><strong>Max Speed:</strong> ${session.max_speed ? `<span style="color: #FFD700;">${session.max_speed.toFixed(2)} m/s</span> (${avgSpeedKmh} km/h)` : 'N/A'}</p>
+                            <p><strong>Total Distance:</strong> ${totalDistance > 0 ? `${totalDistance.toFixed(1)} m` : 'N/A'}</p>
+                        </div>
+                    </div>
                     
-                    <h4 style="color: #87CEEB; margin-top: 20px;">Lap Times:</h4>
-                    <ul style="color: #87CEEB;">
-                        ${lapsList}
-                    </ul>
+                    ${session.notes ? `
+                    <div style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px;">
+                        <h4 style="color: #87CEEB; margin-bottom: 5px;">📝 Notes</h4>
+                        <p style="color: #ffffff; margin: 0;">${session.notes}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #87CEEB; margin-bottom: 10px;">🏁 Lap Times</h4>
+                        ${session.lap_times && session.lap_times.length > 0 ? `
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;">
+                            ${session.lap_times.map((time, idx) => `
+                                <div style="background: rgba(135, 206, 235, 0.1); padding: 10px; border-radius: 5px; text-align: center;">
+                                    <div style="color: #87CEEB; font-size: 12px;">Lap ${idx + 1}</div>
+                                    <div style="color: #FFD700; font-family: 'Orbitron', monospace; font-size: 18px;">${time.toFixed(2)}s</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ` : '<p style="color: #87CEEB;">No lap times recorded - Session may still be in progress or no laps completed</p>'}
+                    </div>
+                    
+                    ${incidents > 0 ? `
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #FF4444;">⚠️ Incidents: ${incidents}</h4>
+                    </div>
+                    ` : ''}
                 </div>
-                <button class="refresh-btn" onclick="(() => { document.body.removeChild(document.querySelector('.overlay')); document.body.removeChild(document.querySelector('.confirm-dialog')); })()">Close</button>
+                <button class="refresh-btn" style="margin-top: 20px;" onclick="(() => { document.body.removeChild(document.querySelector('.overlay')); document.body.removeChild(document.querySelector('.confirm-dialog')); })()">Close</button>
             `;
             
             document.body.appendChild(overlay);
