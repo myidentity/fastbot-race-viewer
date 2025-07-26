@@ -87,7 +87,8 @@
     <div class="container">
         <h1>🏎️ Fastbot Race Monitor</h1>
         
-        <div class="config-section" id="config-section">
+        <!-- Firebase config hidden - auto-connects on load -->
+        <div class="config-section" id="config-section" style="display: none;">
             <h3>Firebase Configuration</h3>
             <p>Enter your Firebase project configuration to connect:</p>
             <input type="text" id="api-key" class="config-input" placeholder="API Key" value="AIzaSyDRaKw_Yj8J_tvMR75Ejlkz5ASpyLQJotg">
@@ -446,19 +447,11 @@ Waiting for connection...
         }
 
 
-        // Load saved config from localStorage
+        // Auto-connect on page load with predefined config
         window.addEventListener('load', function() {
-            const savedConfig = localStorage.getItem('firebaseConfig');
-            if (savedConfig) {
-                const config = JSON.parse(savedConfig);
-                document.getElementById('api-key').value = config.apiKey || '';
-                document.getElementById('project-id').value = config.projectId || '';
-                document.getElementById('database-url').value = config.databaseURL || '';
-                
-                // Auto-connect to Firebase if config is saved
-                console.log('Auto-connecting to Firebase with saved config...');
-                connectToFirebase();
-            }
+            console.log('Auto-connecting to Firebase...');
+            // Always connect automatically with predefined values
+            connectToFirebase();
         });
     </script>
 </body>
