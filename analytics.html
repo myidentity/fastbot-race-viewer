@@ -658,7 +658,7 @@
                     const sessionRef = ref(database, `race_sessions/${sessionId}`);
                     
                     // Handle sessions with invalid or missing timestamps
-                    const promises = [sessionRef.remove()];
+                    const promises = [remove(sessionRef)];
                     
                     // Only try to delete from daily_sessions if we have a valid timestamp
                     const sessionData = sessions[sessionId];
@@ -666,7 +666,7 @@
                         try {
                             const dailyDate = new Date(sessionData.start_time * 1000).toISOString().split('T')[0];
                             const dailyRef = ref(database, `daily_sessions/${dailyDate}/${sessionId}`);
-                            promises.push(dailyRef.remove());
+                            promises.push(remove(dailyRef));
                         } catch (e) {
                             console.warn('Could not delete from daily_sessions due to invalid timestamp');
                         }
@@ -780,8 +780,8 @@
                 }
                 
                 // If timestamp is invalid, show warning
-                if (timestamp === 0) {
-                    console.warn(`Session ${sessionId} has invalid timestamp:`, session.start_time);
+                if (!timestamp || timestamp === 0) {
+                    console.warn(`Session ${sessionId} has invalid timestamp:`, session.start_time || 'undefined');
                 }
                 
                 html += `
