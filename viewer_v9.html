@@ -165,7 +165,7 @@ Waiting for connection...
     <!-- Firebase v9 SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-        import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js';
+        import { getDatabase, ref, onValue, set, push, child, get } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js';
 
         let app = null;
         let database = null;
@@ -320,7 +320,8 @@ Waiting for connection...
                 pc.onicecandidate = async (event) => {
                     if (event.candidate) {
                         try {
-                            await signalingRef.child('ice_candidates_viewer').push({
+                            const iceCandidatesRef = ref(database, 'robots/race_monitor/signaling/ice_candidates_viewer');
+                            await push(iceCandidatesRef, {
                                 candidate: event.candidate.candidate,
                                 sdpMLineIndex: event.candidate.sdpMLineIndex,
                                 sdpMid: event.candidate.sdpMid,
@@ -333,48 +334,52 @@ Waiting for connection...
                 };
                 
                 // Listen for offer from robot
-                const offerRef = signalingRef.child('offer');
-                offerRef.once('value', async (snapshot) => {
-                    const offerData = snapshot.val();
-                    if (offerData) {
-                        console.log('Received offer from robot');
-                        
-                        // Set remote description
-                        await pc.setRemoteDescription(new RTCSessionDescription({
-                            type: offerData.type,
-                            sdp: offerData.sdp
-                        }));
-                        
-                        // Create answer
-                        const answer = await pc.createAnswer();
-                        await pc.setLocalDescription(answer);
-                        
-                        // Send answer to robot
-                        await signalingRef.child('answer').set({
-                            type: answer.type,
-                            sdp: answer.sdp,
-                            timestamp: Date.now()
-                        });
-                        
-                        console.log('Answer sent to robot');
-                    } else {
-                        alert('No offer from robot yet. Make sure the robot is running.');
-                    }
-                });
+                const offerRef = ref(database, 'robots/race_monitor/signaling/offer');
+                const offerSnapshot = await get(offerRef);
+                const offerData = offerSnapshot.val();
+                
+                if (offerData) {
+                    console.log('Received offer from robot');
+                    
+                    // Set remote description
+                    await pc.setRemoteDescription(new RTCSessionDescription({
+                        type: offerData.type,
+                        sdp: offerData.sdp
+                    }));
+                    
+                    // Create answer
+                    const answer = await pc.createAnswer();
+                    await pc.setLocalDescription(answer);
+                    
+                    // Send answer to robot
+                    const answerRef = ref(database, 'robots/race_monitor/signaling/answer');
+                    await set(answerRef, {
+                        type: answer.type,
+                        sdp: answer.sdp,
+                        timestamp: Date.now()
+                    });
+                    
+                    console.log('Answer sent to robot');
+                } else {
+                    alert('No offer from robot yet. Make sure the robot is running.');
+                }
                 
                 // Listen for ICE candidates from robot
-                const iceCandidatesRef = signalingRef.child('ice_candidates');
-                iceCandidatesRef.on('child_added', async (snapshot) => {
-                    const candidateData = snapshot.val();
-                    if (candidateData && pc) {
-                        try {
-                            await pc.addIceCandidate(new RTCIceCandidate({
-                                candidate: candidateData.candidate,
-                                sdpMLineIndex: candidateData.sdpMLineIndex,
-                                sdpMid: candidateData.sdpMid
-                            }));
-                        } catch (error) {
-                            console.error('Failed to add ICE candidate:', error);
+                const iceCandidatesRef = ref(database, 'robots/race_monitor/signaling/ice_candidates');
+                onValue(iceCandidatesRef, async (snapshot) => {
+                    const candidates = snapshot.val();
+                    if (candidates && pc) {
+                        for (const key in candidates) {
+                            const candidateData = candidates[key];
+                            try {
+                                await pc.addIceCandidate(new RTCIceCandidate({
+                                    candidate: candidateData.candidate,
+                                    sdpMLineIndex: candidateData.sdpMLineIndex,
+                                    sdpMid: candidateData.sdpMid
+                                }));
+                            } catch (error) {
+                                console.error('Failed to add ICE candidate:', error);
+                            }
                         }
                     }
                 });
