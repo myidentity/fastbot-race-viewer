@@ -128,7 +128,7 @@
                 <div class="metric-value" id="lap-time">0.0s</div>
             </div>
             <div class="metric">
-                <div class="metric-label">Speed</div>
+                <div class="metric-label">Actual Speed</div>
                 <div class="metric-value" id="speed">0.0 m/s</div>
             </div>
             <div class="metric">
@@ -239,7 +239,7 @@ Waiting for connection...
             // Update telemetry displays
             document.getElementById('lap-count').textContent = data.lap_count || 0;
             document.getElementById('lap-time').textContent = (data.lap_time || 0).toFixed(1) + 's';
-            document.getElementById('speed').textContent = (data.velocity?.linear || 0).toFixed(2) + ' m/s';
+            document.getElementById('speed').textContent = (data.actual_speed || 0).toFixed(2) + ' m/s';
             document.getElementById('position').textContent = 
                 `(${(data.position?.x || 0).toFixed(1)}, ${(data.position?.y || 0).toFixed(1)})`;
             
