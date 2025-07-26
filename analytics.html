@@ -540,14 +540,14 @@
             
             const hours = Math.floor(seconds / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
-            const secs = Math.floor(seconds % 60);
+            const secs = seconds % 60;
             
             if (hours > 0) {
-                return `${hours}h ${minutes}m ${secs}s`;
+                return `${hours}h ${minutes}m ${Math.floor(secs)}s`;
             } else if (minutes > 0) {
-                return `${minutes}m ${secs}s`;
+                return `${minutes}m ${secs.toFixed(1)}s`;
             } else {
-                return `${secs}s`;
+                return `${secs.toFixed(1)}s`;
             }
         }
 
@@ -844,9 +844,57 @@
         }
 
         function showSessionDetails(sessionId) {
-            // For now, just log the session ID
-            // In the future, this could open a detailed view
-            console.log('Show details for session:', sessionId);
+            const session = sessions[sessionId];
+            if (!session) {
+                console.error('Session not found:', sessionId);
+                return;
+            }
+            
+            // Create a detailed view overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            overlay.onclick = () => {
+                document.body.removeChild(overlay);
+                document.body.removeChild(detailsDialog);
+            };
+            
+            const detailsDialog = document.createElement('div');
+            detailsDialog.className = 'confirm-dialog';
+            detailsDialog.style.maxWidth = '800px';
+            detailsDialog.style.maxHeight = '80vh';
+            detailsDialog.style.overflow = 'auto';
+            
+            // Format session details
+            const startTime = session.start_time ? new Date(session.start_time * 1000) : null;
+            const lapsList = session.lap_times ? session.lap_times.map((time, idx) => 
+                `<li>Lap ${idx + 1}: ${time.toFixed(2)}s</li>`
+            ).join('') : '<li>No lap data</li>';
+            
+            detailsDialog.innerHTML = `
+                <h3 style="color: #FFD700; margin-bottom: 20px;">Session Details</h3>
+                <div style="text-align: left; color: #ffffff;">
+                    <p><strong>Session ID:</strong> ${sessionId}</p>
+                    <p><strong>Controller:</strong> ${session.controller_type || 'Unknown'}</p>
+                    <p><strong>Status:</strong> ${session.status || 'Unknown'}</p>
+                    <p><strong>Start Time:</strong> ${startTime ? startTime.toLocaleString() : 'Unknown'}</p>
+                    <p><strong>Duration:</strong> ${formatTime(session.total_duration || 0)}</p>
+                    <p><strong>Laps Completed:</strong> ${session.laps_completed || 0} / ${session.laps_attempted || 0}</p>
+                    <p><strong>Success Rate:</strong> ${session.success_rate ? session.success_rate.toFixed(1) + '%' : 'N/A'}</p>
+                    <p><strong>Best Lap:</strong> ${session.best_lap_time ? session.best_lap_time.toFixed(2) + 's' : 'N/A'}</p>
+                    <p><strong>Average Lap:</strong> ${session.average_lap_time ? session.average_lap_time.toFixed(2) + 's' : 'N/A'}</p>
+                    <p><strong>Max Speed:</strong> ${session.max_speed ? session.max_speed.toFixed(2) + ' m/s' : 'N/A'}</p>
+                    ${session.notes ? `<p><strong>Notes:</strong> ${session.notes}</p>` : ''}
+                    
+                    <h4 style="color: #87CEEB; margin-top: 20px;">Lap Times:</h4>
+                    <ul style="color: #87CEEB;">
+                        ${lapsList}
+                    </ul>
+                </div>
+                <button class="refresh-btn" onclick="(() => { document.body.removeChild(document.querySelector('.overlay')); document.body.removeChild(document.querySelector('.confirm-dialog')); })()">Close</button>
+            `;
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(detailsDialog);
         }
         
         function editNotes(sessionId, event) {
@@ -913,6 +961,7 @@
         window.toggleStar = toggleStar;
         window.editNotes = editNotes;
         window.saveNotesFromInput = saveNotesFromInput;
+        window.showSessionDetails = showSessionDetails;
 
         // Initialize on page load
         window.addEventListener('load', () => {
