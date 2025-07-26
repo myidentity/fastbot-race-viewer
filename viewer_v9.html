@@ -261,8 +261,124 @@ Waiting for connection...
             }
 
             try {
-                // WebRTC implementation would go here
-                alert('WebRTC connection feature coming soon!');
+                // Create peer connection
+                const configuration = {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
+                };
+                
+                pc = new RTCPeerConnection(configuration);
+                
+                // Set up video element
+                const remoteVideo = document.getElementById('remote-video');
+                pc.ontrack = (event) => {
+                    console.log('Received track:', event.track.kind);
+                    if (event.track.kind === 'video') {
+                        remoteVideo.srcObject = event.streams[0];
+                    }
+                };
+                
+                // Handle data channel for telemetry
+                pc.ondatachannel = (event) => {
+                    console.log('Data channel received');
+                    dataChannel = event.channel;
+                    
+                    dataChannel.onopen = () => {
+                        console.log('Data channel opened');
+                        document.getElementById('webrtc-status').className = 'status-indicator status-connected';
+                        document.getElementById('webrtc-text').textContent = 'Connected';
+                    };
+                    
+                    dataChannel.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            updateTelemetry(data);
+                        } catch (e) {
+                            console.error('Failed to parse telemetry:', e);
+                        }
+                    };
+                    
+                    dataChannel.onclose = () => {
+                        console.log('Data channel closed');
+                        document.getElementById('webrtc-status').className = 'status-indicator status-disconnected';
+                        document.getElementById('webrtc-text').textContent = 'Disconnected';
+                    };
+                };
+                
+                // Handle connection state changes
+                pc.onconnectionstatechange = () => {
+                    console.log('Connection state:', pc.connectionState);
+                    if (pc.connectionState === 'connected') {
+                        document.getElementById('connect-btn').disabled = true;
+                        document.getElementById('disconnect-btn').disabled = false;
+                    }
+                };
+                
+                // Handle ICE candidates
+                pc.onicecandidate = async (event) => {
+                    if (event.candidate) {
+                        try {
+                            await signalingRef.child('ice_candidates_viewer').push({
+                                candidate: event.candidate.candidate,
+                                sdpMLineIndex: event.candidate.sdpMLineIndex,
+                                sdpMid: event.candidate.sdpMid,
+                                timestamp: Date.now()
+                            });
+                        } catch (error) {
+                            console.error('Failed to send ICE candidate:', error);
+                        }
+                    }
+                };
+                
+                // Listen for offer from robot
+                const offerRef = signalingRef.child('offer');
+                offerRef.once('value', async (snapshot) => {
+                    const offerData = snapshot.val();
+                    if (offerData) {
+                        console.log('Received offer from robot');
+                        
+                        // Set remote description
+                        await pc.setRemoteDescription(new RTCSessionDescription({
+                            type: offerData.type,
+                            sdp: offerData.sdp
+                        }));
+                        
+                        // Create answer
+                        const answer = await pc.createAnswer();
+                        await pc.setLocalDescription(answer);
+                        
+                        // Send answer to robot
+                        await signalingRef.child('answer').set({
+                            type: answer.type,
+                            sdp: answer.sdp,
+                            timestamp: Date.now()
+                        });
+                        
+                        console.log('Answer sent to robot');
+                    } else {
+                        alert('No offer from robot yet. Make sure the robot is running.');
+                    }
+                });
+                
+                // Listen for ICE candidates from robot
+                const iceCandidatesRef = signalingRef.child('ice_candidates');
+                iceCandidatesRef.on('child_added', async (snapshot) => {
+                    const candidateData = snapshot.val();
+                    if (candidateData && pc) {
+                        try {
+                            await pc.addIceCandidate(new RTCIceCandidate({
+                                candidate: candidateData.candidate,
+                                sdpMLineIndex: candidateData.sdpMLineIndex,
+                                sdpMid: candidateData.sdpMid
+                            }));
+                        } catch (error) {
+                            console.error('Failed to add ICE candidate:', error);
+                        }
+                    }
+                });
+                
             } catch (error) {
                 console.error('WebRTC connection error:', error);
                 alert('Failed to establish WebRTC connection: ' + error.message);
@@ -270,7 +386,23 @@ Waiting for connection...
         }
 
         function disconnectWebRTC() {
-            // WebRTC disconnect implementation
+            // Close peer connection
+            if (pc) {
+                pc.close();
+                pc = null;
+            }
+            
+            // Close data channel
+            if (dataChannel) {
+                dataChannel.close();
+                dataChannel = null;
+            }
+            
+            // Clear video
+            const remoteVideo = document.getElementById('remote-video');
+            remoteVideo.srcObject = null;
+            
+            // Update UI
             document.getElementById('webrtc-status').className = 'status-indicator status-disconnected';
             document.getElementById('webrtc-text').textContent = 'Disconnected';
             document.getElementById('connect-btn').disabled = false;
