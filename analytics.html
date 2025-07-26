@@ -337,21 +337,45 @@
             }
 
             try {
+                // Debug: Check what data is available
+                console.log("🔍 Loading analytics data...");
+                
                 // Load race sessions
                 const sessionsRef = ref(database, 'race_sessions');
                 const sessionsSnapshot = await get(sessionsRef);
                 
                 if (sessionsSnapshot.exists()) {
                     const sessions = sessionsSnapshot.val();
+                    console.log("📊 Found session data:", sessions);
+                    console.log("📊 Number of sessions:", Object.keys(sessions).length);
+                    
+                    // Log a sample session for debugging
+                    const sampleSessionId = Object.keys(sessions)[0];
+                    if (sampleSessionId) {
+                        console.log("📊 Sample session:", sampleSessionId, sessions[sampleSessionId]);
+                    }
+                    
                     displaySessions(sessions);
                     calculateOverallStats(sessions);
                 } else {
-                    showNoData("No race sessions found");
+                    console.log("⚠️  No race_sessions data found in Firebase");
+                    
+                    // Try checking daily sessions
+                    const dailyRef = ref(database, 'daily_sessions');
+                    const dailySnapshot = await get(dailyRef);
+                    
+                    if (dailySnapshot.exists()) {
+                        console.log("📅 Found daily_sessions data:", dailySnapshot.val());
+                        showNoData("Found daily sessions but no main session data. Check data structure.");
+                    } else {
+                        console.log("⚠️  No daily_sessions data found either");
+                        showNoData("No race sessions found. Make sure the monitoring node is running and a race has been completed.");
+                    }
                 }
                 
             } catch (error) {
                 console.error('Error loading analytics:', error);
-                showError("Failed to load analytics data");
+                showError(`Failed to load analytics data: ${error.message}`);
             }
         }
 
