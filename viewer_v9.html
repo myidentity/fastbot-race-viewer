@@ -46,19 +46,10 @@
         .status-disconnected {
             background-color: #f44336;
         }
-        #video-container {
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-            padding-top: 56.25%; /* 16:9 aspect ratio */
-        }
-        #remote-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        #video-feed {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
         }
         .config-section {
             margin: 20px 0;
@@ -112,8 +103,8 @@
                 Firebase: <span id="firebase-text">Disconnected</span>
             </div>
             <div>
-                <span id="webrtc-status" class="status-indicator status-disconnected"></span>
-                WebRTC: <span id="webrtc-text">Disconnected</span>
+                <span id="video-status" class="status-indicator status-disconnected"></span>
+                Video Stream: <span id="video-text">Disconnected</span>
             </div>
             <div style="margin-top: 10px; font-size: 12px; color: #666;">
                 <span id="connection-details"></span>
@@ -150,11 +141,12 @@
 
         <div class="telemetry-card">
             <h2>Video Stream</h2>
-            <div id="video-container">
-                <video id="remote-video" autoplay playsinline></video>
+            <div style="text-align: center;">
+                <img id="video-feed" style="width: 320px; height: 320px; border: 1px solid #ccc; background: #000; image-rendering: pixelated;">
+                <div style="margin-top: 5px; font-size: 12px; color: #666;">
+                    <span id="video-fps">0</span> FPS | <span id="video-delay">0</span>ms delay
+                </div>
             </div>
-            <button id="connect-btn" onclick="connectWebRTC()" disabled>Connect Video</button>
-            <button id="disconnect-btn" onclick="disconnectWebRTC()" disabled>Disconnect</button>
         </div>
 
         <div class="telemetry-card">
@@ -173,14 +165,12 @@ Waiting for connection...
         let app = null;
         let database = null;
         let telemetryRef = null;
-        let signalingRef = null;
-        let pc = null;
-        let dataChannel = null;
+        let videoRef = null;
+        let frameCount = 0;
+        let lastFrameTime = Date.now();
 
         // Make functions global
         window.connectToFirebase = connectToFirebase;
-        window.connectWebRTC = connectWebRTC;
-        window.disconnectWebRTC = disconnectWebRTC;
 
         function connectToFirebase() {
             const apiKey = document.getElementById('api-key').value;
@@ -214,7 +204,7 @@ Waiting for connection...
 
                 // Set up references
                 telemetryRef = ref(database, 'robots/race_monitor/telemetry');
-                signalingRef = ref(database, 'robots/race_monitor/signaling');
+                videoRef = ref(database, 'robots/race_monitor/video_frame');
 
                 // Listen for telemetry updates
                 onValue(telemetryRef, (snapshot) => {
@@ -224,19 +214,42 @@ Waiting for connection...
                     }
                 });
 
+                // Listen for video frames
+                let fpsTimer = setInterval(() => {
+                    const fps = frameCount;
+                    frameCount = 0;
+                    document.getElementById('video-fps').textContent = fps;
+                }, 1000);
+
+                onValue(videoRef, (snapshot) => {
+                    const frameData = snapshot.val();
+                    if (frameData && frameData.image) {
+                        // Update video feed
+                        const img = document.getElementById('video-feed');
+                        img.src = 'data:image/jpeg;base64,' + frameData.image;
+                        
+                        // Calculate delay
+                        const now = Date.now();
+                        const frameTime = frameData.timestamp * 1000; // Convert to ms
+                        const delay = now - frameTime;
+                        document.getElementById('video-delay').textContent = Math.round(delay);
+                        
+                        // Count frames for FPS
+                        frameCount++;
+                        lastFrameTime = now;
+                        
+                        // Update video status
+                        document.getElementById('video-status').className = 'status-indicator status-connected';
+                        document.getElementById('video-text').textContent = 'Connected';
+                    }
+                });
+
                 // Update UI
                 document.getElementById('firebase-status').className = 'status-indicator status-connected';
                 document.getElementById('firebase-text').textContent = 'Connected';
                 document.getElementById('config-section').style.display = 'none';
-                document.getElementById('connect-btn').disabled = false;
 
                 console.log('Firebase connected successfully');
-                
-                // Automatically connect WebRTC after Firebase connection
-                setTimeout(() => {
-                    console.log('Auto-connecting WebRTC...');
-                    connectWebRTC();
-                }, 1000); // Small delay to ensure Firebase is fully initialized
 
             } catch (error) {
                 console.error('Firebase connection error:', error);
@@ -267,195 +280,6 @@ Waiting for connection...
             document.getElementById('connection-details').textContent = message;
         }
 
-        async function connectWebRTC() {
-            if (!signalingRef) {
-                alert('Please connect to Firebase first');
-                return;
-            }
-
-            updateConnectionDetails('Starting WebRTC connection...');
-
-            try {
-                // Create peer connection
-                // Note: Using STUN only as TURN server not accessible
-                const configuration = {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun.stunprotocol.org:3478' }
-                    ],
-                    iceCandidatePoolSize: 10
-                };
-                
-                pc = new RTCPeerConnection(configuration);
-                updateConnectionDetails('Peer connection created');
-                
-                // Set up video element
-                const remoteVideo = document.getElementById('remote-video');
-                pc.ontrack = (event) => {
-                    console.log('Received track:', event.track.kind);
-                    if (event.track.kind === 'video') {
-                        remoteVideo.srcObject = event.streams[0];
-                    }
-                };
-                
-                // Handle data channel for telemetry
-                pc.ondatachannel = (event) => {
-                    console.log('Data channel received');
-                    dataChannel = event.channel;
-                    
-                    dataChannel.onopen = () => {
-                        console.log('Data channel opened');
-                        document.getElementById('webrtc-status').className = 'status-indicator status-connected';
-                        document.getElementById('webrtc-text').textContent = 'Connected';
-                    };
-                    
-                    dataChannel.onmessage = (event) => {
-                        try {
-                            const data = JSON.parse(event.data);
-                            updateTelemetry(data);
-                        } catch (e) {
-                            console.error('Failed to parse telemetry:', e);
-                        }
-                    };
-                    
-                    dataChannel.onclose = () => {
-                        console.log('Data channel closed');
-                        document.getElementById('webrtc-status').className = 'status-indicator status-disconnected';
-                        document.getElementById('webrtc-text').textContent = 'Disconnected';
-                    };
-                };
-                
-                // Handle connection state changes
-                pc.onconnectionstatechange = () => {
-                    console.log('Connection state:', pc.connectionState);
-                    updateConnectionDetails(`Connection state: ${pc.connectionState}`);
-                    if (pc.connectionState === 'connected') {
-                        document.getElementById('connect-btn').disabled = true;
-                        document.getElementById('disconnect-btn').disabled = false;
-                        updateConnectionDetails('WebRTC connected successfully!');
-                    } else if (pc.connectionState === 'failed') {
-                        updateConnectionDetails('Connection failed - check robot monitoring node');
-                    }
-                };
-                
-                // Handle ICE candidates
-                pc.onicecandidate = async (event) => {
-                    if (event.candidate) {
-                        try {
-                            const iceCandidatesRef = ref(database, 'robots/race_monitor/signaling/ice_candidates_viewer');
-                            await push(iceCandidatesRef, {
-                                candidate: event.candidate.candidate,
-                                sdpMLineIndex: event.candidate.sdpMLineIndex,
-                                sdpMid: event.candidate.sdpMid,
-                                timestamp: Date.now()
-                            });
-                        } catch (error) {
-                            console.error('Failed to send ICE candidate:', error);
-                        }
-                    }
-                };
-                
-                // Listen for offer from robot
-                const offerRef = ref(database, 'robots/race_monitor/signaling/offer');
-                
-                // Try to get existing offer or wait for new one
-                let offerData = null;
-                let retryCount = 0;
-                const maxRetries = 10;
-                
-                while (!offerData && retryCount < maxRetries) {
-                    const offerSnapshot = await get(offerRef);
-                    offerData = offerSnapshot.val();
-                    
-                    if (!offerData) {
-                        updateConnectionDetails(`Waiting for offer from robot... (attempt ${retryCount + 1}/${maxRetries})`);
-                        console.log(`Waiting for offer from robot... (attempt ${retryCount + 1}/${maxRetries})`);
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        retryCount++;
-                    }
-                }
-                
-                if (offerData) {
-                    updateConnectionDetails('Received offer from robot');
-                    console.log('Received offer from robot');
-                    
-                    // Set remote description
-                    await pc.setRemoteDescription(new RTCSessionDescription({
-                        type: offerData.type,
-                        sdp: offerData.sdp
-                    }));
-                    updateConnectionDetails('Remote description set');
-                    
-                    // Create answer
-                    const answer = await pc.createAnswer();
-                    await pc.setLocalDescription(answer);
-                    updateConnectionDetails('Answer created');
-                    
-                    // Send answer to robot
-                    const answerRef = ref(database, 'robots/race_monitor/signaling/answer');
-                    await set(answerRef, {
-                        type: answer.type,
-                        sdp: answer.sdp,
-                        timestamp: Date.now()
-                    });
-                    
-                    updateConnectionDetails('Answer sent to robot, waiting for connection...');
-                    console.log('Answer sent to robot');
-                } else {
-                    console.error('No offer received from robot after waiting');
-                    alert('No offer from robot. Make sure the monitoring node is running and try refreshing the page.');
-                }
-                
-                // Listen for ICE candidates from robot
-                const iceCandidatesRef = ref(database, 'robots/race_monitor/signaling/ice_candidates');
-                onValue(iceCandidatesRef, async (snapshot) => {
-                    const candidates = snapshot.val();
-                    if (candidates && pc) {
-                        for (const key in candidates) {
-                            const candidateData = candidates[key];
-                            try {
-                                await pc.addIceCandidate(new RTCIceCandidate({
-                                    candidate: candidateData.candidate,
-                                    sdpMLineIndex: candidateData.sdpMLineIndex,
-                                    sdpMid: candidateData.sdpMid
-                                }));
-                            } catch (error) {
-                                console.error('Failed to add ICE candidate:', error);
-                            }
-                        }
-                    }
-                });
-                
-            } catch (error) {
-                console.error('WebRTC connection error:', error);
-                alert('Failed to establish WebRTC connection: ' + error.message);
-            }
-        }
-
-        function disconnectWebRTC() {
-            // Close peer connection
-            if (pc) {
-                pc.close();
-                pc = null;
-            }
-            
-            // Close data channel
-            if (dataChannel) {
-                dataChannel.close();
-                dataChannel = null;
-            }
-            
-            // Clear video
-            const remoteVideo = document.getElementById('remote-video');
-            remoteVideo.srcObject = null;
-            
-            // Update UI
-            document.getElementById('webrtc-status').className = 'status-indicator status-disconnected';
-            document.getElementById('webrtc-text').textContent = 'Disconnected';
-            document.getElementById('connect-btn').disabled = false;
-            document.getElementById('disconnect-btn').disabled = true;
-        }
 
         // Load saved config from localStorage
         window.addEventListener('load', function() {
