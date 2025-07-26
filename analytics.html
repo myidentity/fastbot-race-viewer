@@ -102,13 +102,14 @@
         
         .session-item {
             background: rgba(135, 206, 235, 0.1);
-            padding: 15px;
-            margin: 10px 0;
+            padding: 20px;
+            margin: 15px 0;
             border-radius: 10px;
             border-left: 4px solid #87CEEB;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            min-height: 120px;
         }
         
         .session-item:hover {
@@ -120,21 +121,28 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            padding-right: 140px; /* Space for controls */
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .session-id {
             font-family: 'Orbitron', monospace;
             font-weight: 700;
             color: #FFD700;
+            font-size: 14px;
+            word-break: break-all;
+            max-width: 60%;
         }
         
         .session-status {
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 6px 12px;
+            border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
+            white-space: nowrap;
         }
         
         .status-completed {
@@ -149,11 +157,25 @@
             border: 1px solid #FF4444;
         }
         
+        .status-active {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
         .session-details {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            font-size: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 8px;
+            font-size: 13px;
+            margin-top: 5px;
         }
         
         .detail-item {
@@ -216,12 +238,18 @@
         
         .session-controls {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 12px;
+            right: 12px;
             display: flex;
-            gap: 10px;
-            opacity: 0.3;
+            gap: 6px;
+            opacity: 0.2;
             transition: opacity 0.3s ease;
+            z-index: 10;
+            background: rgba(0, 17, 34, 0.95);
+            padding: 6px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            backdrop-filter: blur(10px);
         }
         
         .session-item:hover .session-controls {
@@ -233,10 +261,16 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: #ffffff;
             border-radius: 5px;
-            padding: 5px 10px;
+            padding: 6px 10px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .control-btn:hover {
@@ -250,6 +284,12 @@
             font-size: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
+            min-width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
         }
         
         .star-btn.starred {
@@ -358,6 +398,41 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
             z-index: 999;
+        }
+        
+        @media (max-width: 768px) {
+            .session-header {
+                padding-right: 50px;
+            }
+            
+            .session-id {
+                max-width: 100%;
+                font-size: 12px;
+            }
+            
+            .session-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .session-controls {
+                gap: 4px;
+                padding: 4px 6px;
+                top: 8px;
+                right: 8px;
+            }
+            
+            .control-btn {
+                min-width: 28px;
+                height: 28px;
+                font-size: 14px;
+                padding: 4px 6px;
+            }
+            
+            .star-btn {
+                min-width: 28px;
+                height: 28px;
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -687,7 +762,12 @@
                 // Handle missing or invalid timestamps
                 const timestamp = session.start_time || 0;
                 const startDate = timestamp > 0 ? new Date(timestamp * 1000) : new Date();
-                const statusClass = session.status === 'completed' ? 'status-completed' : 'status-failed';
+                let statusClass = 'status-failed';
+                if (session.status === 'completed') {
+                    statusClass = 'status-completed';
+                } else if (session.status === 'active') {
+                    statusClass = 'status-active';
+                }
                 
                 // If timestamp is invalid, show warning
                 if (timestamp === 0) {
