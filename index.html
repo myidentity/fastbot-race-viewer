@@ -143,7 +143,7 @@
         <div class="telemetry-card">
             <h2>Video Stream</h2>
             <div style="text-align: center;">
-                <img id="video-feed" style="width: 320px; height: 320px; border: 1px solid #ccc; background: #000; image-rendering: pixelated;">
+                <img id="video-feed" style="width: 480px; height: 202px; border: 1px solid #ccc; background: #000; image-rendering: pixelated;">
                 <div style="margin-top: 5px; font-size: 12px; color: #666;">
                     <span id="video-fps">0</span> FPS | <span id="video-delay">0</span>ms delay
                 </div>
@@ -420,7 +420,18 @@ Waiting for connection...
         function updateTelemetry(data) {
             // Update telemetry displays
             document.getElementById('lap-count').textContent = data.lap_count || 0;
-            document.getElementById('lap-time').textContent = (data.lap_time || 0).toFixed(1) + 's';
+            
+            // Prioritize actual_lap_time (finish line crossing) over continuous lap_time
+            let displayTime;
+            if (data.actual_lap_time !== null && data.actual_lap_time !== undefined) {
+                // Show the actual finish line crossing time
+                displayTime = data.actual_lap_time;
+            } else {
+                // Fall back to continuous lap time during the lap
+                displayTime = data.lap_time || 0;
+            }
+            document.getElementById('lap-time').textContent = displayTime.toFixed(1) + 's';
+            
             document.getElementById('speed').textContent = (data.actual_speed || 0).toFixed(2) + ' m/s';
             document.getElementById('position').textContent = 
                 `(${(data.position?.x || 0).toFixed(1)}, ${(data.position?.y || 0).toFixed(1)})`;
