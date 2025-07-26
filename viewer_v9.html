@@ -150,6 +150,13 @@
         </div>
 
         <div class="telemetry-card">
+            <h2>🎙️ Live Commentary</h2>
+            <div style="padding: 10px; background: #e3f2fd; border-radius: 4px; font-style: italic; min-height: 50px;">
+                <span id="live-commentary">Waiting for race data...</span>
+            </div>
+        </div>
+
+        <div class="telemetry-card">
             <h2>Raw Telemetry Data</h2>
             <pre id="raw-data" style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;">
 Waiting for connection...
@@ -168,6 +175,28 @@ Waiting for connection...
         let videoRef = null;
         let frameCount = 0;
         let lastFrameTime = Date.now();
+        
+        // Commentary lookup table for efficient telemetry
+        const COMMENTARY_LOOKUP = {
+            'casino_straight': ["FLYING down Casino Straight!", "MAXIMUM ATTACK on the straight!", "Building INCREDIBLE speed!", "The crowd goes WILD!", "PUSHING the limits here!", "What a MISSILE down this straight!"],
+            'beau_rivage': ["ATTACKING the hill!", "Climbing like a ROCKET!", "Defying GRAVITY here!", "The car is FLYING uphill!", "SPECTACULAR hill climb!", "Power delivery is PERFECT!"],
+            'massenet_complex': ["THREADING the needle!", "Surgical PRECISION required!", "DANCING through Massenet!", "This is POETRY in motion!", "INCREDIBLE car control!", "Making it look EASY!"],
+            'mirabeau_descent': ["PLUNGING down Mirabeau!", "GRAVITY-DEFYING descent!", "The DROP is INSANE!", "COMMITMENT through here!", "Brake temps CRITICAL!", "FEARLESS through the descent!"],
+            'portier_approach': ["SETTING UP for glory!", "The tunnel BECKONS!", "PRECISION before darkness!", "Heart rate SPIKING!", "PERFECT positioning!", "The calm before the STORM!"],
+            'monaco_tunnel_entry': ["HERE COMES THE TUNNEL!", "Into the ABYSS!", "LIGHTS OUT ahead!", "BRACE for darkness!", "The FAMOUS tunnel awaits!", "COMMITTED to the entry!"],
+            'grand_tunnel': ["THUNDERING through darkness!", "ECHO CHAMBER of speed!", "FLAT OUT in the tunnel!", "The sound is DEAFENING!", "PURE SPEED in darkness!", "EMERGING like a MISSILE!"],
+            'nouvelle_chicane': ["BLINDED by daylight!", "LIGHTNING reflexes!", "SNAP direction change!", "From darkness to CHAOS!", "NAILING the chicane!", "What a TRANSITION!"],
+            'piscine_complex': ["DIVING into the pool!", "TECHNICAL MASTERCLASS!", "PRECISION at the limit!", "Swimming pool BALLET!", "INCH-PERFECT through here!", "The crowd is ON THEIR FEET!"],
+            'rascasse_finale': ["FINAL PUSH TO GLORY!", "The finish line CALLS!", "MAXIMUM ATTACK to the line!", "GIVE IT EVERYTHING!", "The LEGENDARY Rascasse!", "HISTORY in the making!"]
+        };
+        
+        function getCommentary(section, index) {
+            if (!section || !COMMENTARY_LOOKUP[section] || index < 0) {
+                return "Racing through the circuit!";
+            }
+            const comments = COMMENTARY_LOOKUP[section];
+            return index < comments.length ? comments[index] : comments[0];
+        }
 
         // Make functions global
         window.connectToFirebase = connectToFirebase;
@@ -271,6 +300,12 @@ Waiting for connection...
             
             document.getElementById('vision-confidence').textContent = 
                 ((data.vision_confidence || 0) * 100).toFixed(0) + '%';
+
+            // Update live commentary using efficient lookup
+            if (data.commentary_section && data.commentary_idx >= 0) {
+                const commentary = getCommentary(data.commentary_section, data.commentary_idx);
+                document.getElementById('live-commentary').textContent = commentary;
+            }
 
             // Update raw data
             document.getElementById('raw-data').textContent = JSON.stringify(data, null, 2);
