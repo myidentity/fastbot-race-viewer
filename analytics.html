@@ -807,29 +807,33 @@
                                 <div class="detail-value">${timestamp > 0 ? startDate.toLocaleTimeString() : 'Unknown'}</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">Controller</div>
-                                <div class="detail-value">${session.controller_type || 'vision_hybrid_race'}</div>
-                            </div>
-                            <div class="detail-item">
                                 <div class="detail-label">Duration</div>
                                 <div class="detail-value">${formatTime(session.total_duration || session.duration || 0)}</div>
                             </div>
+                            ${session.laps_attempted > 0 ? `
                             <div class="detail-item">
                                 <div class="detail-label">Laps</div>
-                                <div class="detail-value">${session.laps_completed || 0}/${session.laps_attempted || 0}</div>
+                                <div class="detail-value">${session.laps_completed || 0}/${session.laps_attempted}</div>
                             </div>
+                            ` : ''}
+                            ${session.best_lap_time ? `
                             <div class="detail-item">
                                 <div class="detail-label">Best Lap</div>
                                 <div class="detail-value">${formatLapTime(session.best_lap_time || session.best_lap)}</div>
                             </div>
+                            ` : ''}
+                            ${session.max_speed > 0 ? `
                             <div class="detail-item">
                                 <div class="detail-label">Max Speed</div>
-                                <div class="detail-value">${session.max_speed > 0 ? session.max_speed.toFixed(2) + ' m/s' : '-'}</div>
+                                <div class="detail-value">${session.max_speed.toFixed(2)} m/s</div>
                             </div>
+                            ` : ''}
+                            ${session.laps_attempted > 0 && session.success_rate >= 0 ? `
                             <div class="detail-item">
                                 <div class="detail-label">Success Rate</div>
-                                <div class="detail-value">${session.success_rate >= 0 ? session.success_rate.toFixed(1) + '%' : '-'}</div>
+                                <div class="detail-value">${session.success_rate.toFixed(1)}%</div>
                             </div>
+                            ` : ''}
                         </div>
                         ${session.notes ? `
                             <div class="notes-section">
@@ -883,21 +887,20 @@
                         <div>
                             <h4 style="color: #87CEEB; margin-bottom: 10px;">🏎️ Session Info</h4>
                             <p><strong>Session ID:</strong> <span style="font-family: 'Orbitron', monospace; font-size: 12px;">${sessionId}</span></p>
-                            <p><strong>Controller:</strong> <span style="color: #FFD700;">${session.controller_type || 'Unknown'}</span></p>
                             <p><strong>Status:</strong> <span class="session-status ${session.status === 'completed' ? 'status-completed' : session.status === 'active' ? 'status-active' : 'status-failed'}" style="display: inline-block; padding: 2px 8px;">${session.status || 'Unknown'}</span></p>
-                            <p><strong>Track:</strong> ${session.track_name || 'Monaco Circuit'}</p>
                             <p><strong>Start Time:</strong> ${startTime ? startTime.toLocaleString() : 'Unknown'}</p>
                             <p><strong>Duration:</strong> <span style="color: #FFD700; font-family: 'Orbitron', monospace;">${durationInSeconds.toFixed(1)} seconds</span></p>
                         </div>
                         
                         <div>
                             <h4 style="color: #87CEEB; margin-bottom: 10px;">📈 Performance Metrics</h4>
-                            <p><strong>Laps Completed:</strong> <span style="color: ${session.laps_completed > 0 ? '#00FF00' : '#FF4444'}">${session.laps_completed || 0}</span> / ${session.laps_attempted || 0}</p>
-                            <p><strong>Success Rate:</strong> ${session.success_rate ? `<span style="color: ${session.success_rate > 80 ? '#00FF00' : session.success_rate > 50 ? '#FFD700' : '#FF4444'}">${session.success_rate.toFixed(1)}%</span>` : 'N/A'}</p>
-                            <p><strong>Best Lap:</strong> ${session.best_lap_time ? `<span style="color: #00FF00; font-family: 'Orbitron', monospace;">${session.best_lap_time.toFixed(2)}s</span>` : 'No completed laps'}</p>
-                            <p><strong>Average Lap:</strong> ${session.average_lap_time ? `${session.average_lap_time.toFixed(2)}s` : 'N/A'}</p>
-                            <p><strong>Max Speed:</strong> ${session.max_speed ? `<span style="color: #FFD700;">${session.max_speed.toFixed(2)} m/s</span> (${avgSpeedKmh} km/h)` : 'N/A'}</p>
-                            <p><strong>Total Distance:</strong> ${totalDistance > 0 ? `${totalDistance.toFixed(1)} m` : 'N/A'}</p>
+                            ${session.laps_attempted > 0 ? `
+                                <p><strong>Laps Completed:</strong> <span style="color: ${session.laps_completed > 0 ? '#00FF00' : '#FF4444'}">${session.laps_completed || 0}</span> / ${session.laps_attempted}</p>
+                                <p><strong>Success Rate:</strong> <span style="color: ${session.success_rate > 80 ? '#00FF00' : session.success_rate > 50 ? '#FFD700' : '#FF4444'}">${session.success_rate.toFixed(1)}%</span></p>
+                            ` : '<p style="color: #87CEEB;">No laps attempted yet</p>'}
+                            ${session.best_lap_time ? `<p><strong>Best Lap:</strong> <span style="color: #00FF00; font-family: 'Orbitron', monospace;">${session.best_lap_time.toFixed(2)}s</span></p>` : ''}
+                            ${session.average_lap_time ? `<p><strong>Average Lap:</strong> ${session.average_lap_time.toFixed(2)}s</p>` : ''}
+                            ${session.max_speed && session.max_speed > 0 ? `<p><strong>Max Speed:</strong> <span style="color: #FFD700;">${session.max_speed.toFixed(2)} m/s</span> (${avgSpeedKmh} km/h)</p>` : ''}
                         </div>
                     </div>
                     
