@@ -945,9 +945,16 @@
         function updateTelemetry(data) {
             console.log('updateTelemetry called with data:', data);
             
-            // Race Telemetry
-            const currentLapTime = data.lap_time || 0;
-            const lapTimeText = currentLapTime.toFixed(1) + 's';
+            // Race Telemetry - Prioritize actual_lap_time (finish line crossing) over continuous lap_time
+            let displayTime;
+            if (data.actual_lap_time !== null && data.actual_lap_time !== undefined) {
+                // Show the actual finish line crossing time
+                displayTime = data.actual_lap_time;
+            } else {
+                // Fall back to continuous lap time during the lap
+                displayTime = data.lap_time || 0;
+            }
+            const lapTimeText = displayTime.toFixed(1) + 's';
             console.log('Lap time:', lapTimeText);
             
             // Update lap time display on track map
