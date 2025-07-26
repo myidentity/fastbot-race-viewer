@@ -430,8 +430,18 @@
 
             let html = '';
             sortedSessions.slice(0, 20).forEach(([sessionId, session]) => { // Show last 20 sessions
-                const startDate = new Date((session.start_time || 0) * 1000);
+                // Debug log for each session
+                console.log(`Session ${sessionId}:`, session);
+                
+                // Handle missing or invalid timestamps
+                const timestamp = session.start_time || 0;
+                const startDate = timestamp > 0 ? new Date(timestamp * 1000) : new Date();
                 const statusClass = session.status === 'completed' ? 'status-completed' : 'status-failed';
+                
+                // If timestamp is invalid, show warning
+                if (timestamp === 0) {
+                    console.warn(`Session ${sessionId} has invalid timestamp:`, session.start_time);
+                }
                 
                 html += `
                     <div class="session-item" onclick="showSessionDetails('${sessionId}')">
@@ -442,19 +452,19 @@
                         <div class="session-details">
                             <div class="detail-item">
                                 <div class="detail-label">Date</div>
-                                <div class="detail-value">${startDate.toLocaleDateString()}</div>
+                                <div class="detail-value">${timestamp > 0 ? startDate.toLocaleDateString() : 'Unknown'}</div>
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">Time</div>
-                                <div class="detail-value">${startDate.toLocaleTimeString()}</div>
+                                <div class="detail-value">${timestamp > 0 ? startDate.toLocaleTimeString() : 'Unknown'}</div>
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">Controller</div>
-                                <div class="detail-value">${session.controller_type || '-'}</div>
+                                <div class="detail-value">${session.controller_type || 'vision_hybrid_race'}</div>
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">Duration</div>
-                                <div class="detail-value">${formatTime(session.total_duration)}</div>
+                                <div class="detail-value">${formatTime(session.total_duration || session.duration || 0)}</div>
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">Laps</div>
@@ -462,15 +472,15 @@
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">Best Lap</div>
-                                <div class="detail-value">${formatLapTime(session.best_lap_time)}</div>
+                                <div class="detail-value">${formatLapTime(session.best_lap_time || session.best_lap)}</div>
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">Max Speed</div>
-                                <div class="detail-value">${session.max_speed ? session.max_speed.toFixed(2) + ' m/s' : '-'}</div>
+                                <div class="detail-value">${session.max_speed > 0 ? session.max_speed.toFixed(2) + ' m/s' : '-'}</div>
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">Success Rate</div>
-                                <div class="detail-value">${session.success_rate ? session.success_rate.toFixed(1) + '%' : '-'}</div>
+                                <div class="detail-value">${session.success_rate >= 0 ? session.success_rate.toFixed(1) + '%' : '-'}</div>
                             </div>
                         </div>
                     </div>
