@@ -1331,9 +1331,7 @@
             
             // Sort sessions by start time (newest first)
             const sortedSessions = Object.entries(sessions).sort(([,a], [,b]) => {
-                // Starred sessions first, then by time
-                if (a.starred && !b.starred) return -1;
-                if (!a.starred && b.starred) return 1;
+                // Pure chronological sorting - latest on top
                 return (b.start_time || 0) - (a.start_time || 0);
             });
             
