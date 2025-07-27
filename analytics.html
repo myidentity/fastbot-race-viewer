@@ -1556,8 +1556,8 @@
             notesSection.innerHTML = `
                 <textarea class="notes-input" placeholder="Add notes about this session..." onclick="event.stopPropagation()">${currentNotes}</textarea>
                 <div style="margin-top: 10px;">
-                    <button class="control-btn" onclick="saveNotesFromInput('${sessionId}')">Save</button>
-                    <button class="control-btn" onclick="loadAnalytics()">Cancel</button>
+                    <button class="control-btn" onclick="event.stopPropagation(); saveNotesFromInput('${sessionId}')">Save</button>
+                    <button class="control-btn" onclick="event.stopPropagation(); loadAnalytics()">Cancel</button>
                 </div>
             `;
             
