@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fastbot Race Monitor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .telemetry-card {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .metric {
+            display: inline-block;
+            margin: 10px 20px 10px 0;
+        }
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .status-connected {
+            background-color: #4CAF50;
+        }
+        .status-disconnected {
+            background-color: #f44336;
+        }
+        #video-feed {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+        .config-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+        }
+        .config-input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏎️ Fastbot Race Monitor</h1>
+        
+        <!-- Firebase config hidden - auto-connects on load -->
+        <div class="config-section" id="config-section" style="display: none;">
+            <h3>Firebase Configuration</h3>
+            <p>Enter your Firebase project configuration to connect:</p>
+            <input type="text" id="api-key" class="config-input" placeholder="API Key" value="AIzaSyDRaKw_Yj8J_tvMR75Ejlkz5ASpyLQJotg">
+            <input type="text" id="project-id" class="config-input" placeholder="Project ID" value="summer-race-monitoring">
+            <input type="text" id="database-url" class="config-input" placeholder="Database URL" value="https://summer-race-monitoring-default-rtdb.europe-west1.firebasedatabase.app">
+            <button onclick="connectToFirebase()">Connect</button>
+        </div>
+
+        <div class="telemetry-card">
+            <h2>Connection Status</h2>
+            <div>
+                <span id="firebase-status" class="status-indicator status-disconnected"></span>
+                Firebase: <span id="firebase-text">Disconnected</span>
+            </div>
+            <div>
+                <span id="video-status" class="status-indicator status-disconnected"></span>
+                Video Stream: <span id="video-text">Disconnected</span>
+            </div>
+            <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                <span id="connection-details"></span>
+            </div>
+        </div>
+
+        <div class="telemetry-card">
+            <h2>Race Telemetry</h2>
+            <div class="metric">
+                <div class="metric-label">Lap Count</div>
+                <div class="metric-value" id="lap-count">0</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Lap Time</div>
+                <div class="metric-value" id="lap-time">0.0s</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Actual Speed</div>
+                <div class="metric-value" id="speed">0.0 m/s</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Position</div>
+                <div class="metric-value" id="position">(0.0, 0.0)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Front Distance</div>
+                <div class="metric-value" id="front-distance">∞</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Vision Confidence</div>
+                <div class="metric-value" id="vision-confidence">0%</div>
+            </div>
+        </div>
+
+        <div class="telemetry-card">
+            <h2>Video Stream</h2>
+            <div style="text-align: center;">
+                <img id="video-feed" style="width: 480px; height: 202px; border: 1px solid #ccc; background: #000; image-rendering: pixelated;">
+                <div style="margin-top: 5px; font-size: 12px; color: #666;">
+                    <span id="video-fps">0</span> FPS | <span id="video-delay">0</span>ms delay
+                </div>
+            </div>
+        </div>
+
+        <div class="telemetry-card">
+            <h2>🎙️ Live Commentary</h2>
+            <div style="padding: 10px; background: #e3f2fd; border-radius: 4px; font-style: italic; min-height: 50px;">
+                <span id="live-commentary">Waiting for race data...</span>
+            </div>
+        </div>
+
+        <div class="telemetry-card">
+            <h2>Raw Telemetry Data</h2>
+            <pre id="raw-data" style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;">
+Waiting for connection...
+            </pre>
+        </div>
+    </div>
+
+    <!-- Firebase v9 SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import { getDatabase, ref, onValue, set, push, child, get } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js';
+
+        let app = null;
+        let database = null;
+        let telemetryRef = null;
+        let videoRef = null;
+        let frameCount = 0;
+        let lastFrameTime = Date.now();
+        
+        // Commentary lookup table for efficient telemetry
+        const COMMENTARY_LOOKUP = {
+            'casino_straight': [
+                "FLYING through the start! 🏁",
+                "PEDAL TO THE METAL down Casino!",
+                "MAXIMUM ATTACK MODE!",
+                "Building INCREDIBLE speed!",
+                "LAUNCHING like a rocket!",
+                "The crowd goes WILD!",
+                "THUNDER down the straight!",
+                "Absolutely SENDING it!",
+                "FLAT OUT through Casino!",
+                "Engine at FULL SONG!",
+                "BLISTERING pace here!",
+                "What a START from Dad Fitt!"
+            ],
+            'beau_rivage': [
+                "POWERING up Beau Rivage!",
+                "The LEGENDARY climb begins!",
+                "Defying GRAVITY here!",
+                "ATTACKING the hill!",
+                "Engine SCREAMING uphill!",
+                "What a MAGNIFICENT ascent!",
+                "CONQUERING the rise!",
+                "Momentum is EVERYTHING here!",
+                "PUSHING hard up the slope!",
+                "The car SURGES forward!",
+                "BRILLIANT climb technique!",
+                "Dad Fitt makes it look EASY!"
+            ],
+            'massenet_complex': [
+                "THREADING the needle!",
+                "Surgical PRECISION required!",
+                "DANCING through Massenet!",
+                "This is POETRY in motion!",
+                "INCREDIBLE car control!",
+                "Making it look EASY!",
+                "INCH-PERFECT through here!",
+                "Technical MASTERCLASS!",
+                "WEAVING through barriers!",
+                "Dad Fitt showing his CLASS!",
+                "RAZOR-SHARP reflexes!",
+                "What a DEMONSTRATION!"
+            ],
+            'mirabeau_descent': [
+                "PLUNGING down Mirabeau!",
+                "GRAVITY-DEFYING descent!",
+                "The DROP is INSANE!",
+                "COMMITMENT through here!",
+                "Brake temps CRITICAL!",
+                "FEARLESS through the descent!",
+                "BREATHTAKING bravery!",
+                "Downhill CHARGE!",
+                "The car DIVES down!",
+                "SPECTACULAR descent!",
+                "Dad Fitt is ON IT!",
+                "MAGNIFICENT control!"
+            ],
+            'portier_approach': [
+                "SETTING UP for glory!",
+                "The tunnel BECKONS!",
+                "PRECISION before darkness!",
+                "Heart rate SPIKING!",
+                "PERFECT positioning!",
+                "The calm before the STORM!",
+                "CRUCIAL setup phase!",
+                "Entry speed is KEY!",
+                "NAILING the approach!",
+                "Tunnel run INCOMING!",
+                "Dad Fitt PREPARES!",
+                "FLAWLESS line here!"
+            ],
+            'monaco_tunnel_entry': [
+                "HERE COMES THE TUNNEL!",
+                "Into the ABYSS!",
+                "LIGHTS OUT ahead!",
+                "BRACE for darkness!",
+                "The FAMOUS tunnel awaits!",
+                "COMMITTED to the entry!",
+                "DARKNESS approaches FAST!",
+                "TUNNEL vision mode!",
+                "The ICONIC passage!",
+                "Dad Fitt DISAPPEARS!",
+                "Into the VOID!",
+                "SENSATIONAL entry speed!"
+            ],
+            'grand_tunnel': [
+                "THUNDERING through darkness!",
+                "ECHO CHAMBER of speed!",
+                "FLAT OUT in the tunnel!",
+                "The sound is DEAFENING!",
+                "PURE SPEED in darkness!",
+                "EMERGING like a MISSILE!",
+                "SONIC BOOM underground!",
+                "MAXIMUM velocity here!",
+                "The tunnel ROARS!",
+                "Dad Fitt is FLYING!",
+                "UNBELIEVABLE speed!",
+                "Light at the END!"
+            ],
+            'nouvelle_chicane': [
+                "BLINDED by daylight!",
+                "LIGHTNING reflexes!",
+                "SNAP direction change!",
+                "From darkness to CHAOS!",
+                "NAILING the chicane!",
+                "What a TRANSITION!",
+                "INSTANT adaptation!",
+                "Left-right PERFECTION!",
+                "Dad Fitt ATTACKS!",
+                "PHENOMENAL agility!",
+                "The chicane BITES!",
+                "TEXTBOOK execution!"
+            ],
+            'piscine_complex': [
+                "DIVING into the pool!",
+                "TECHNICAL MASTERCLASS!",
+                "PRECISION at the limit!",
+                "Swimming pool BALLET!",
+                "INCH-PERFECT through here!",
+                "The crowd is ON THEIR FEET!",
+                "SUPREME concentration!",
+                "Dad Fitt is SURGICAL!",
+                "MILLIMETER margins!",
+                "BREATHTAKING skill!",
+                "The SHOWCASE section!",
+                "ABSOLUTELY clinical!"
+            ],
+            'rascasse_finale': [
+                "FINAL PUSH TO GLORY!",
+                "The finish line CALLS!",
+                "MAXIMUM ATTACK to the line!",
+                "GIVE IT EVERYTHING!",
+                "The LEGENDARY Rascasse!",
+                "HISTORY in the making!",
+                "Dad Fitt UNLEASHED!",
+                "SENSATIONAL finale!",
+                "The crowd goes WILD!",
+                "EPIC conclusion!",
+                "What a LAP!",
+                "CROSSING THE LINE!"
+            ]
+        };
+        
+        function getCommentary(section, index) {
+            if (!section || !COMMENTARY_LOOKUP[section] || index < 0) {
+                return "Racing through the circuit!";
+            }
+            const comments = COMMENTARY_LOOKUP[section];
+            return index < comments.length ? comments[index] : comments[0];
+        }
+
+        // Make functions global
+        window.connectToFirebase = connectToFirebase;
+
+        function connectToFirebase() {
+            const apiKey = document.getElementById('api-key').value;
+            const projectId = document.getElementById('project-id').value;
+            let databaseURL = document.getElementById('database-url').value;
+
+            if (!apiKey || !projectId) {
+                alert('Please enter API Key and Project ID');
+                return;
+            }
+
+            // Default database URL if not provided
+            if (!databaseURL) {
+                databaseURL = `https://${projectId}.firebaseio.com`;
+            }
+
+            const firebaseConfig = {
+                apiKey: apiKey,
+                authDomain: `${projectId}.firebaseapp.com`,
+                databaseURL: databaseURL,
+                projectId: projectId
+            };
+
+            try {
+                // Initialize Firebase
+                app = initializeApp(firebaseConfig);
+                database = getDatabase(app);
+                
+                // Save config to localStorage
+                localStorage.setItem('firebaseConfig', JSON.stringify(firebaseConfig));
+
+                // Set up references
+                telemetryRef = ref(database, 'robots/race_monitor/telemetry');
+                videoRef = ref(database, 'robots/race_monitor/video_frame');
+
+                // Listen for telemetry updates
+                onValue(telemetryRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        updateTelemetry(data);
+                    }
+                });
+
+                // Listen for video frames
+                let fpsTimer = setInterval(() => {
+                    const fps = frameCount;
+                    frameCount = 0;
+                    document.getElementById('video-fps').textContent = fps;
+                }, 1000);
+
+                onValue(videoRef, (snapshot) => {
+                    const frameData = snapshot.val();
+                    if (frameData && frameData.image) {
+                        // Update video feed
+                        const img = document.getElementById('video-feed');
+                        img.src = 'data:image/jpeg;base64,' + frameData.image;
+                        
+                        // Calculate delay
+                        const now = Date.now();
+                        const frameTime = frameData.timestamp * 1000; // Convert to ms
+                        const delay = now - frameTime;
+                        document.getElementById('video-delay').textContent = Math.round(delay);
+                        
+                        // Count frames for FPS
+                        frameCount++;
+                        lastFrameTime = now;
+                        
+                        // Update video status
+                        document.getElementById('video-status').className = 'status-indicator status-connected';
+                        document.getElementById('video-text').textContent = 'Connected';
+                    }
+                });
+
+                // Update UI
+                document.getElementById('firebase-status').className = 'status-indicator status-connected';
+                document.getElementById('firebase-text').textContent = 'Connected';
+                document.getElementById('config-section').style.display = 'none';
+
+                console.log('Firebase connected successfully');
+
+            } catch (error) {
+                console.error('Firebase connection error:', error);
+                alert('Failed to connect to Firebase: ' + error.message);
+            }
+        }
+
+        function updateTelemetry(data) {
+            // Update telemetry displays
+            document.getElementById('lap-count').textContent = data.lap_count || 0;
+            
+            // Prioritize actual_lap_time (finish line crossing) over continuous lap_time
+            let displayTime;
+            if (data.actual_lap_time !== null && data.actual_lap_time !== undefined) {
+                // Show the actual finish line crossing time
+                displayTime = data.actual_lap_time;
+            } else {
+                // Fall back to continuous lap time during the lap
+                displayTime = data.lap_time || 0;
+            }
+            document.getElementById('lap-time').textContent = displayTime.toFixed(1) + 's';
+            
+            document.getElementById('speed').textContent = (data.actual_speed || 0).toFixed(2) + ' m/s';
+            document.getElementById('position').textContent = 
+                `(${(data.position?.x || 0).toFixed(1)}, ${(data.position?.y || 0).toFixed(1)})`;
+            
+            const frontDist = data.wall_distances?.front;
+            document.getElementById('front-distance').textContent = 
+                frontDist === Infinity || frontDist > 100 ? '∞' : frontDist.toFixed(2) + 'm';
+            
+            document.getElementById('vision-confidence').textContent = 
+                ((data.vision_confidence || 0) * 100).toFixed(0) + '%';
+
+            // Update live commentary using efficient lookup
+            if (data.commentary_section && data.commentary_idx >= 0) {
+                const commentary = getCommentary(data.commentary_section, data.commentary_idx);
+                document.getElementById('live-commentary').textContent = commentary;
+            }
+
+            // Update raw data
+            document.getElementById('raw-data').textContent = JSON.stringify(data, null, 2);
+        }
+
+        function updateConnectionDetails(message) {
+            document.getElementById('connection-details').textContent = message;
+        }
+
+
+        // Auto-connect on page load with predefined config
+        window.addEventListener('load', function() {
+            console.log('Auto-connecting to Firebase...');
+            // Always connect automatically with predefined values
+            connectToFirebase();
+        });
+    </script>
+</body>
+</html>
