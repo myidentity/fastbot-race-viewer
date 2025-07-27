@@ -42,8 +42,8 @@
         .header-content {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 20px;
+            justify-content: flex-start;
+            padding-left: 30px;
         }
         
         .helmet-image {
@@ -66,6 +66,7 @@
             letter-spacing: 2px;
             background: linear-gradient(45deg, #FFD700, #FFF, #FFD700);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
@@ -277,26 +278,57 @@
         }
         
         .commentary-section {
-            background: linear-gradient(135deg, 
-                rgba(20, 52, 82, 0.95) 0%, 
-                rgba(15, 40, 65, 0.98) 50%, 
-                rgba(10, 28, 46, 1) 100%);
-            border-radius: 20px;
-            padding: 30px;
-            border: 2px solid #FFD700;
-            text-align: center;
-            font-style: italic;
-            font-size: 1.3em;
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 400;
-            line-height: 1.4;
+            background: linear-gradient(180deg, 
+                rgba(5, 5, 5, 0.98) 0%, 
+                rgba(15, 15, 15, 0.95) 50%, 
+                rgba(5, 5, 5, 0.98) 100%);
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid #00D2BE;
+            text-align: left;
+            font-style: normal;
+            font-size: 1.4em;
+            min-height: 120px;
+            max-height: 120px;
+            font-weight: 300;
+            line-height: 1.6;
             color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            text-shadow: 0 0 8px rgba(0, 210, 190, 0.3);
             position: relative;
             overflow: hidden;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        
+        .vertical-ticker {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(180deg, rgba(5, 5, 5, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%);
+            border-radius: 6px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        .ticker-messages {
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.8s ease-out;
+        }
+        
+        .ticker-line {
+            padding: 12px 20px;
+            font-size: 1.4em;
+            color: #ffffff;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
         }
         
         .commentary-section::before {
@@ -305,14 +337,35 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #FFD700, #87CEEB, #FFD700);
-            animation: commentary-glow 4s ease-in-out infinite;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(0, 210, 190, 0.15) 0%, 
+                transparent 15%, 
+                transparent 85%, 
+                rgba(0, 210, 190, 0.15) 100%);
+            z-index: 1;
+            pointer-events: none;
         }
         
-        @keyframes commentary-glow {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+        .commentary-section::after {
+            content: 'LIVE';
+            position: absolute;
+            top: 8px;
+            right: 15px;
+            background: #FF4444;
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            animation: live-blink 2s ease-in-out infinite;
+            z-index: 2;
+        }
+        
+        @keyframes live-blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.6; }
         }
         
         .monaco-flag {
@@ -321,6 +374,15 @@
             right: 20px;
             font-size: 1.5em;
             opacity: 0.7;
+        }
+        
+        .driver-info {
+            position: absolute;
+            bottom: 12px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            opacity: 0.9;
         }
         
         /* Yacht and Casino atmosphere */
@@ -402,13 +464,16 @@
 <body>
     <div class="header">
         <div class="header-content">
-            <img src="helmet.png" alt="Racing Helmet" class="helmet-image">
             <div>
                 <h1>MARIOKART</h1>
                 <div class="monaco-subtitle">FASTBOT RACING MONITOR</div>
             </div>
         </div>
         <div class="monaco-flag">🏁</div>
+        <div class="driver-info">
+            <img src="helmet.png" alt="Racing Helmet" class="helmet-image" style="margin-right: 10px;">
+            <div style="font-size: 0.9em; color: #FFD700; font-family: 'Orbitron', monospace; font-weight: 600; letter-spacing: 1px; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);">Driver: Dad Fitt</div>
+        </div>
     </div>
     
     <div class="container">
@@ -419,9 +484,8 @@
             <div style="display: flex; justify-content: center;">
                 <!-- Track Map with Video Feed Inside -->
                 <div style="margin-left: 40px;">
-                    <div style="font-size: 12px; color: #00D2BE; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; margin-bottom: 10px; text-align: center;">Track Map & Live View</div>
-                    <div style="position: relative; width: 600px; height: 500px; background: rgba(10, 28, 46, 0.9); border: 2px solid #FFD700; border-radius: 10px;">
-                        <canvas id="track-canvas" width="596" height="496" style="border-radius: 8px; background: rgba(0, 0, 0, 0.8);"></canvas>
+                    <div style="position: relative; width: 750px; height: 600px; background: rgba(10, 28, 46, 0.9); border: 2px solid #FFD700; border-radius: 10px;">
+                        <canvas id="track-canvas" width="746" height="596" style="border-radius: 8px; background: rgba(0, 0, 0, 0.8);"></canvas>
                         
                         <!-- Video Feed - moves with car position -->
                         <div id="video-container-moving" class="video-container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; transition: all 0.3s ease;">
@@ -430,7 +494,7 @@
                         
                         
                         <!-- Lap Time Display - Circular Design -->
-                        <div id="track-lap-time" class="metric" style="position: absolute; top: 10px; right: 30px; z-index: 15;">
+                        <div id="track-lap-time" class="metric" style="position: absolute; top: 10px; right: 10px; z-index: 15;">
                             <!-- Outer black circular dial -->
                             <div style="position: relative; width: 120px; height: 120px; background: linear-gradient(135deg, #404040 0%, #606060 50%, #404040 100%); border-radius: 50%; border: 3px solid #FFD700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center;">
                                 
@@ -451,7 +515,7 @@
                         </div>
                         
                         <!-- Speedometer - Matching Lap Time Style -->
-                        <div id="ferrari-speedometer" class="metric" style="position: absolute; top: 180px; right: 30px; z-index: 15;">
+                        <div id="ferrari-speedometer" class="metric" style="position: absolute; bottom: 10px; right: 10px; z-index: 15;">
                             <!-- Outer black circular dial -->
                             <div style="position: relative; width: 120px; height: 120px; background: linear-gradient(135deg, #404040 0%, #606060 50%, #404040 100%); border-radius: 50%; border: 3px solid #FFD700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center;">
                                 
@@ -493,18 +557,43 @@
                             </div>
                         </div>
                         
-                        <!-- LIDAR overlays on track map -->
-                        <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: rgba(0, 210, 190, 0.15); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0, 210, 190, 0.3);">
-                            <div style="font-size: 8px; color: #00D2BE;">F</div>
-                            <div style="font-size: 10px; font-weight: 700; color: #ffffff;" id="front-distance">∞</div>
-                        </div>
-                        <div style="position: absolute; left: -35px; top: 50%; transform: translateY(-50%); background: rgba(0, 210, 190, 0.15); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0, 210, 190, 0.3);">
-                            <div style="font-size: 8px; color: #00D2BE;">L</div>
-                            <div style="font-size: 10px; font-weight: 700; color: #ffffff;" id="left-distance">∞</div>
-                        </div>
-                        <div style="position: absolute; right: -35px; top: 50%; transform: translateY(-50%); background: rgba(0, 210, 190, 0.15); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0, 210, 190, 0.3);">
-                            <div style="font-size: 8px; color: #00D2BE;">R</div>
-                            <div style="font-size: 10px; font-weight: 700; color: #ffffff;" id="right-distance">∞</div>
+                        
+                        <!-- F1-Style LIDAR Proximity Display -->
+                        <div id="lidar-display" class="metric" style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); z-index: 15;">
+                            <!-- Main LIDAR panel with F1 styling -->
+                            <div style="position: relative; width: 120px; height: 100px; background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%); border-radius: 12px; border: 2px solid #00D2BE; box-shadow: 0 0 20px rgba(0, 210, 190, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.6);">
+                                
+                                <!-- PROXIMITY label -->
+                                <div style="position: absolute; top: 8px; left: 50%; transform: translateX(-50%); text-align: center;">
+                                    <div style="font-size: 8px; color: #00D2BE; font-family: 'Orbitron', monospace; font-weight: 600; letter-spacing: 1px;">PROXIMITY</div>
+                                </div>
+                                
+                                <!-- Car representation in center -->
+                                <div style="position: absolute; top: 58%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 12px; background: #FFD700; border-radius: 2px; border: 1px solid #FFF; box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);"></div>
+                                
+                                <!-- Front distance -->
+                                <div style="position: absolute; top: 22px; left: 50%; transform: translateX(-50%); text-align: center;">
+                                    <div style="font-size: 6px; color: #00D2BE; font-family: 'Orbitron', monospace;">F</div>
+                                    <div id="front-distance" style="font-size: 12px; font-weight: 900; color: #ffffff; font-family: 'Orbitron', monospace; text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);">∞</div>
+                                </div>
+                                
+                                <!-- Left distance -->
+                                <div style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); text-align: center;">
+                                    <div style="font-size: 6px; color: #00D2BE; font-family: 'Orbitron', monospace;">L</div>
+                                    <div id="left-distance" style="font-size: 12px; font-weight: 900; color: #ffffff; font-family: 'Orbitron', monospace; text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);">∞</div>
+                                </div>
+                                
+                                <!-- Right distance -->
+                                <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); text-align: center;">
+                                    <div style="font-size: 6px; color: #00D2BE; font-family: 'Orbitron', monospace;">R</div>
+                                    <div id="right-distance" style="font-size: 12px; font-weight: 900; color: #ffffff; font-family: 'Orbitron', monospace; text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);">∞</div>
+                                </div>
+                                
+                                <!-- Warning indicators for close proximity -->
+                                <div id="proximity-warning-front" style="position: absolute; top: 18px; left: 50%; transform: translateX(-50%); width: 8px; height: 3px; background: #FF4444; border-radius: 1px; opacity: 0; transition: opacity 0.3s ease;"></div>
+                                <div id="proximity-warning-left" style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 3px; height: 8px; background: #FF4444; border-radius: 1px; opacity: 0; transition: opacity 0.3s ease;"></div>
+                                <div id="proximity-warning-right" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 3px; height: 8px; background: #FF4444; border-radius: 1px; opacity: 0; transition: opacity 0.3s ease;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -512,10 +601,14 @@
         </div>
 
         <div class="telemetry-card">
-            <h2>🎙️ MARIOKART Circuit Commentary</h2>
+            <h2>📺 LIVE RACE COMMENTARY</h2>
             <div class="monaco-divider"></div>
             <div class="commentary-section">
-                <span id="live-commentary">Welcome to the exciting MARIOKART Circuit... Awaiting race data...</span>
+                <div class="vertical-ticker">
+                    <div class="ticker-messages" id="ticker-messages">
+                        <div class="ticker-line">🏁 Welcome to MARIOKART FastBot Racing - Awaiting telemetry data...</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -728,6 +821,20 @@
         let trackLoaded = false;
         let trackBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
         
+        // Commentary timing control
+        let lastCommentaryTime = 0;
+        let lastCommentarySection = '';
+        let lastCommentaryText = '';
+        let commentaryUpdateInterval = 10000; // 10 seconds
+        
+        // Vertical ticker system
+        let tickerMessages = [];
+        const MAX_VISIBLE_LINES = 3;
+        
+        // 3-line teleprompter control
+        let currentLineIndex = 0;
+        let messageCounter = 0;
+        
         // Lap completion detection
         let previousLapProgress = -1; // Start with -1 to indicate uninitialized
         let lapFlashTimeout = null;
@@ -910,14 +1017,14 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             // Calculate scale to fit track in canvas
-            const padding = 20;
+            const padding = 80;
             const scaleX = (canvas.width - padding * 2) / (trackBounds.maxX - trackBounds.minX);
             const scaleY = (canvas.height - padding * 2) / (trackBounds.maxY - trackBounds.minY);
             const scale = Math.min(scaleX, scaleY);
             
             // Center the track (with vertical flip)
             const offsetX = (canvas.width - (trackBounds.maxX - trackBounds.minX) * scale) / 2 - trackBounds.minX * scale;
-            const offsetY = (canvas.height - (trackBounds.maxY - trackBounds.minY) * scale) / 2 + trackBounds.maxY * scale;
+            const offsetY = (canvas.height - (trackBounds.maxY - trackBounds.minY) * scale) / 2 + trackBounds.maxY * scale - 60;
             
             // Draw track outline
             ctx.strokeStyle = '#FFD700';
@@ -975,14 +1082,14 @@
             
             // Calculate scale and offset (exactly same as drawTrack)
             const canvas = document.getElementById('track-canvas');
-            const padding = 20;
+            const padding = 80;
             const scaleX = (canvas.width - padding * 2) / (trackBounds.maxX - trackBounds.minX);
             const scaleY = (canvas.height - padding * 2) / (trackBounds.maxY - trackBounds.minY);
             const scale = Math.min(scaleX, scaleY);
             
             // Use exact same offset calculation as in drawTrack
             const offsetX = (canvas.width - (trackBounds.maxX - trackBounds.minX) * scale) / 2 - trackBounds.minX * scale;
-            const offsetY = (canvas.height - (trackBounds.maxY - trackBounds.minY) * scale) / 2 + trackBounds.maxY * scale;
+            const offsetY = (canvas.height - (trackBounds.maxY - trackBounds.minY) * scale) / 2 + trackBounds.maxY * scale - 60;
             
             // Calculate video feed position (with vertical flip) - exact same as track drawing
             const canvasX = carX * scale + offsetX;
@@ -1018,6 +1125,49 @@
                     trackLapTimeContainer.classList.remove('lap-finish-animation');
                 }
             }, 6000);
+        }
+        
+        function updateCommentaryText(newText) {
+            addTickerMessage(newText);
+        }
+        
+        function addTickerMessage(text) {
+            tickerMessages.push(text);
+            
+            const container = document.getElementById('ticker-messages');
+            if (!container) return;
+            
+            // Add new message at bottom
+            const newLine = document.createElement('div');
+            newLine.className = 'ticker-line';
+            newLine.textContent = text;
+            newLine.style.opacity = '0';
+            newLine.style.transform = 'translateY(40px)';
+            container.appendChild(newLine);
+            
+            // Animate new message in
+            setTimeout(() => {
+                newLine.style.transition = 'all 0.8s ease-out';
+                newLine.style.opacity = '1';
+                newLine.style.transform = 'translateY(0)';
+            }, 50);
+            
+            // Remove oldest message if we exceed limit
+            const lines = container.children;
+            if (lines.length > MAX_VISIBLE_LINES) {
+                const oldestLine = lines[0];
+                oldestLine.style.transition = 'all 0.8s ease-out';
+                oldestLine.style.opacity = '0';
+                oldestLine.style.transform = 'translateY(-40px)';
+                
+                setTimeout(() => {
+                    if (oldestLine.parentNode) {
+                        container.removeChild(oldestLine);
+                    }
+                }, 800);
+            }
+            
+            console.log('Added ticker message:', text);
         }
         
         function updateTelemetry(data) {
@@ -1116,18 +1266,37 @@
             
             // Note: vision-system and speed-multiplier elements were removed with race telemetry panel
             
-            // LIDAR Sensors
+            // F1-Style LIDAR Proximity Display with Color Coding
             const frontDist = data.wall_distances?.front;
-            document.getElementById('front-distance').textContent = 
-                frontDist === Infinity || frontDist > 100 ? '∞' : frontDist.toFixed(2) + 'm';
-            
             const leftDist = data.wall_distances?.left;
-            document.getElementById('left-distance').textContent = 
-                leftDist === Infinity || leftDist > 100 ? '∞' : leftDist.toFixed(2) + 'm';
-            
             const rightDist = data.wall_distances?.right;
-            document.getElementById('right-distance').textContent = 
-                rightDist === Infinity || rightDist > 100 ? '∞' : rightDist.toFixed(2) + 'm';
+            
+            // Function to get color based on distance
+            function getProximityColor(distance) {
+                if (distance === Infinity || distance > 100) return '#ffffff';
+                if (distance < 0.5) return '#FF4444';  // Critical - Red
+                if (distance < 1.0) return '#FF8844';  // Warning - Orange
+                if (distance < 2.0) return '#FFDD44';  // Caution - Yellow
+                return '#44FF88';  // Safe - Green
+            }
+            
+            // Update front distance
+            const frontElement = document.getElementById('front-distance');
+            frontElement.textContent = frontDist === Infinity || frontDist > 100 ? '∞' : frontDist.toFixed(1) + 'm';
+            frontElement.style.color = getProximityColor(frontDist);
+            document.getElementById('proximity-warning-front').style.opacity = (frontDist < 1.0 && frontDist !== Infinity) ? '1' : '0';
+            
+            // Update left distance
+            const leftElement = document.getElementById('left-distance');
+            leftElement.textContent = leftDist === Infinity || leftDist > 100 ? '∞' : leftDist.toFixed(1) + 'm';
+            leftElement.style.color = getProximityColor(leftDist);
+            document.getElementById('proximity-warning-left').style.opacity = (leftDist < 1.0 && leftDist !== Infinity) ? '1' : '0';
+            
+            // Update right distance
+            const rightElement = document.getElementById('right-distance');
+            rightElement.textContent = rightDist === Infinity || rightDist > 100 ? '∞' : rightDist.toFixed(1) + 'm';
+            rightElement.style.color = getProximityColor(rightDist);
+            document.getElementById('proximity-warning-right').style.opacity = (rightDist < 1.0 && rightDist !== Infinity) ? '1' : '0';
             
             // Update car position on track
             if (data.position && data.position.x !== undefined && data.position.y !== undefined) {
@@ -1137,15 +1306,37 @@
                 console.log('No valid position data:', data.position);
             }
 
-            // Update live commentary using efficient lookup
+            // Update live commentary with smooth transitions (every 10 seconds or section change)
+            const currentTime = Date.now();
             if (data.commentary_section && data.commentary_idx >= 0) {
-                const commentary = getCommentary(data.commentary_section, data.commentary_idx);
-                document.getElementById('live-commentary').textContent = commentary;
+                const sectionChanged = data.commentary_section !== lastCommentarySection;
+                const timeElapsed = currentTime - lastCommentaryTime >= commentaryUpdateInterval;
+                
+                if (sectionChanged || timeElapsed) {
+                    const commentary = getCommentary(data.commentary_section, data.commentary_idx);
+                    
+                    // Only update if the commentary text is different from the last one
+                    if (commentary !== lastCommentaryText) {
+                        updateCommentaryText(commentary);
+                        
+                        lastCommentaryTime = currentTime;
+                        lastCommentarySection = data.commentary_section;
+                        lastCommentaryText = commentary;
+                    }
+                }
             }
         }
 
 
+        // Initialize queue ticker
+        function initVerticalTicker() {
+            tickerMessages.push('🏁 Welcome to MARIOKART FastBot Racing - Awaiting telemetry data...');
+            
+            console.log('Vertical ticker initialized with welcome message');
+        }
+
         window.addEventListener('load', () => {
+            initVerticalTicker();
             connectToFirebase();
             loadTrackData();
         });
