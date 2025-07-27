@@ -1376,7 +1376,8 @@
                                 ${session.starred ? '⭐' : '☆'}
                             </button>
                             <button class="control-btn" onclick="editNotes('${sessionId}', event)" title="Edit notes">📝</button>
-                            <button class="control-btn delete-btn" onclick="deleteSession('${sessionId}', event)" title="Delete session">🗑️</button>
+                            <!-- Delete button disabled for safety -->
+                            <!-- <button class="control-btn delete-btn" onclick="deleteSession('${sessionId}', event)" title="Delete session">🗑️</button> -->
                         </div>
                         <div class="session-header">
                             <div class="session-id">Session #${globalSessionNumbers[sessionId]}</div>

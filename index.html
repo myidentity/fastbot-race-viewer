@@ -518,6 +518,12 @@
         let app = null;
         let database = null;
         let frameCount = 0;
+        
+        // Commentary timing variables
+        let lastCommentaryUpdate = 0;
+        let currentCommentary = "Welcome to the exciting MARIOKART Circuit... Awaiting race data...";
+        let pendingCommentary = null;
+        const COMMENTARY_UPDATE_INTERVAL = 5000; // 5 seconds
 
         // Commentary lookup table for efficient telemetry
         const COMMENTARY_LOOKUP = {
@@ -1127,10 +1133,18 @@
                 console.log('No valid position data:', data.position);
             }
 
-            // Update live commentary using efficient lookup
+            // Update live commentary using efficient lookup with 5-second intervals
             if (data.commentary_section && data.commentary_idx >= 0) {
                 const commentary = getCommentary(data.commentary_section, data.commentary_idx);
-                document.getElementById('live-commentary').textContent = commentary;
+                pendingCommentary = commentary;
+                
+                const now = Date.now();
+                if (now - lastCommentaryUpdate >= COMMENTARY_UPDATE_INTERVAL) {
+                    // Update the displayed commentary
+                    currentCommentary = pendingCommentary || currentCommentary;
+                    document.getElementById('live-commentary').textContent = currentCommentary;
+                    lastCommentaryUpdate = now;
+                }
             }
         }
 
