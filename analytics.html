@@ -236,6 +236,123 @@
             margin: 20px 0;
         }
         
+        .trend-chart-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            width: 100%;
+            min-height: 400px;
+        }
+        
+        .trend-chart-container canvas {
+            width: 100%;
+            height: 400px;
+            display: block;
+        }
+        
+        .trend-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .trend-stat {
+            background: rgba(135, 206, 235, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(135, 206, 235, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .trend-label {
+            color: #87CEEB;
+            font-size: 14px;
+        }
+        
+        .trend-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: #FFD700;
+        }
+        
+        .controller-chart-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            width: 100%;
+            min-height: 400px;
+        }
+        
+        .controller-chart-container canvas {
+            width: 100%;
+            height: 400px;
+            display: block;
+        }
+        
+        .controller-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .controller-card {
+            background: rgba(135, 206, 235, 0.1);
+            border: 1px solid rgba(135, 206, 235, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .controller-card:hover {
+            background: rgba(135, 206, 235, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(135, 206, 235, 0.3);
+        }
+        
+        .controller-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: #FFD700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .controller-stats {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .controller-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(135, 206, 235, 0.2);
+        }
+        
+        .controller-stat-label {
+            color: #87CEEB;
+            font-size: 13px;
+        }
+        
+        .controller-stat-value {
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+        
         .session-controls {
             position: absolute;
             top: 12px;
@@ -434,6 +551,166 @@
                 font-size: 18px;
             }
         }
+        
+        /* Track Visualization Styles */
+        #track-visualization-container {
+            padding: 20px;
+        }
+        
+        .track-controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .track-control-select {
+            background: #1a2332;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .track-canvas-container {
+            position: relative;
+            width: 100%;
+            min-height: 600px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .track-lap-time {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            padding: 15px 20px;
+            z-index: 20;
+        }
+        
+        .track-lap-time-label {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .track-lap-time-value {
+            color: #FFD700;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .track-max-speed {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00FF00;
+            border-radius: 8px;
+            padding: 15px 20px;
+            z-index: 20;
+        }
+        
+        .track-max-speed-label {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .track-max-speed-value {
+            color: #00FF00;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        #track-map-canvas {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #FFD700;
+            border-radius: 4px;
+        }
+        
+        .track-legend {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #FFD700;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 150px;
+        }
+        
+        .track-legend-title {
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .track-legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 8px 0;
+            color: #CCC;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .track-legend-mode {
+            display: flex;
+            align-items: center;
+        }
+        
+        .track-legend-speed {
+            color: #87CEEB;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .track-legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        
+        .track-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .track-stat {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .track-stat-label {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .track-stat-value {
+            color: #FFD700;
+            font-size: 24px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -456,22 +733,6 @@
                     <div class="stat-label">Best Lap Time</div>
                     <div class="stat-value" id="best-lap-time">-</div>
                 </div>
-                <div class="stat-box">
-                    <div class="stat-label">Total Laps</div>
-                    <div class="stat-value" id="total-laps">-</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Success Rate</div>
-                    <div class="stat-value" id="success-rate">-</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Max Speed</div>
-                    <div class="stat-value" id="max-speed">-</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Racing Time</div>
-                    <div class="stat-value" id="total-racing-time">-</div>
-                </div>
             </div>
             <button class="refresh-btn" onclick="loadAnalytics()">🔄 Refresh Data</button>
             <label style="margin-left: 20px; color: #87CEEB;">
@@ -491,20 +752,62 @@
         <!-- Performance Trends -->
         <div class="analytics-card">
             <h2>📊 Performance Trends</h2>
-            <div class="chart-placeholder">
-                <h3>Lap Time Progression</h3>
-                <p>Chart visualization coming soon...</p>
-                <p>Will show lap time improvements over sessions</p>
+            <div id="performance-trends-container">
+                <div class="trend-chart-container">
+                    <canvas id="lap-time-chart"></canvas>
+                </div>
+                <div class="trend-stats">
+                    <div class="trend-stat">
+                        <span class="trend-label">Best Lap Ever:</span>
+                        <span class="trend-value" id="best-lap-ever">-</span>
+                    </div>
+                    <div class="trend-stat">
+                        <span class="trend-label">Average Improvement:</span>
+                        <span class="trend-value" id="avg-improvement">-</span>
+                    </div>
+                    <div class="trend-stat">
+                        <span class="trend-label">Consistency:</span>
+                        <span class="trend-value" id="consistency-score">-</span>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Controller Comparison -->
+        
+        <!-- Track Visualization -->
         <div class="analytics-card">
-            <h2>🎮 Controller Performance</h2>
-            <div class="chart-placeholder">
-                <h3>Controller Comparison</h3>
-                <p>Performance comparison between different controllers</p>
-                <p>(vision_hybrid_race, waypoint_follower, etc.)</p>
+            <h2>🗺️ Track Map - Control Mode Visualization</h2>
+            <div id="track-visualization-container">
+                <div class="track-controls">
+                    <label for="session-select">Session: </label>
+                    <select id="session-select" class="track-control-select">
+                        <option value="">Select a session...</option>
+                    </select>
+                    <label for="lap-select" style="margin-left: 20px;">Lap: </label>
+                    <select id="lap-select" class="track-control-select">
+                        <option value="">Select a lap...</option>
+                    </select>
+                </div>
+                <div class="track-canvas-container">
+                    <canvas id="track-map-canvas"></canvas>
+                    <!-- Lap Time Display -->
+                    <div class="track-lap-time" id="track-lap-time-display" style="display: none;">
+                        <div class="track-lap-time-label">LAP TIME</div>
+                        <div class="track-lap-time-value" id="track-lap-time-value">-</div>
+                    </div>
+                    <!-- Max Speed Display -->
+                    <div class="track-max-speed" id="track-max-speed-display" style="display: none;">
+                        <div class="track-max-speed-label">MAX SPEED</div>
+                        <div class="track-max-speed-value" id="track-max-speed-value">-</div>
+                    </div>
+                    <div class="track-legend" id="track-legend">
+                        <div class="track-legend-title">Control Modes</div>
+                        <!-- Legend items will be dynamically generated -->
+                    </div>
+                </div>
+                <div id="track-stats" class="track-stats">
+                    <!-- Track statistics will be shown here -->
+                </div>
             </div>
         </div>
     </div>
@@ -516,6 +819,9 @@
 
         let app = null;
         let database = null;
+        let globalSessionNumbers = {};
+        let sessions = {}; // Store sessions globally for management functions
+        let currentSessionsData = null;
 
         function initFirebase() {
             const firebaseConfig = {
@@ -581,6 +887,17 @@
                         console.log("📊 Sample session:", sampleSessionId, sessions[sampleSessionId]);
                     }
                     
+                    // Create session numbers mapping first
+                    const sortedSessionsForNumbers = Object.entries(sessions).sort(([,a], [,b]) => {
+                        if (a.starred && !b.starred) return -1;
+                        if (!a.starred && b.starred) return 1;
+                        return (b.start_time || 0) - (a.start_time || 0);
+                    });
+                    
+                    sortedSessionsForNumbers.forEach(([sessionId], index) => {
+                        globalSessionNumbers[sessionId] = sortedSessionsForNumbers.length - index;
+                    });
+                    
                     displaySessions(sessions);
                     calculateOverallStats(sessions);
                 } else {
@@ -607,12 +924,7 @@
 
         function calculateOverallStats(sessions) {
             let totalSessions = 0;
-            let totalLaps = 0;
             let bestLapTime = Infinity;
-            let maxSpeed = 0;
-            let totalRacingTime = 0;
-            let completedLaps = 0;
-            let attemptedLaps = 0;
 
             // Check if we should filter by starred sessions
             const starredOnly = document.getElementById('starred-only').checked;
@@ -622,31 +934,296 @@
                 if (starredOnly && !session.starred) return;
                 
                 totalSessions++;
-                totalLaps += session.laps_completed || 0;
-                attemptedLaps += session.laps_attempted || 0;
-                completedLaps += session.laps_completed || 0;
-                totalRacingTime += session.total_duration || 0;
-                
-                if (session.max_speed && session.max_speed > maxSpeed) {
-                    maxSpeed = session.max_speed;
-                }
                 
                 if (session.best_lap_time && session.best_lap_time < bestLapTime) {
                     bestLapTime = session.best_lap_time;
                 }
             });
 
-            const successRate = attemptedLaps > 0 ? (completedLaps / attemptedLaps * 100) : 0;
-
             // Update UI
             document.getElementById('total-sessions').textContent = totalSessions;
-            document.getElementById('total-laps').textContent = totalLaps;
             document.getElementById('best-lap-time').textContent = bestLapTime === Infinity ? "-" : formatLapTime(bestLapTime);
-            document.getElementById('max-speed').textContent = maxSpeed > 0 ? `${maxSpeed.toFixed(2)} m/s` : "-";
-            document.getElementById('total-racing-time').textContent = formatTime(totalRacingTime);
-            document.getElementById('success-rate').textContent = `${successRate.toFixed(1)}%`;
+            
+            // Update performance trends
+            updatePerformanceTrends(sessions);
+            
+            // Store for resize handler
+            currentSessionsData = sessions;
+            
+            // Initialize track visualization
+            initTrackVisualization(sessions, globalSessionNumbers);
         }
 
+        function updatePerformanceTrends(sessions) {
+            // Get canvas and context
+            const canvas = document.getElementById('lap-time-chart');
+            const ctx = canvas.getContext('2d');
+            
+            // Sort sessions by time
+            const sortedSessions = Object.entries(sessions)
+                .filter(([_, session]) => session.lap_times && session.lap_times.length > 0)
+                .sort(([,a], [,b]) => (a.start_time || 0) - (b.start_time || 0));
+            
+            if (sortedSessions.length === 0) {
+                // Clear canvas and show no data message
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#87CEEB';
+                ctx.textAlign = 'center';
+                ctx.fillText('No lap data available', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+            
+            // Extract lap times for chart
+            const lapData = [];
+            let bestLapEver = Infinity;
+            let totalImprovement = 0;
+            let previousBest = null;
+            
+            sortedSessions.forEach(([sessionId, session], index) => {
+                const sessionNumber = sortedSessions.length - index;
+                session.lap_times.forEach((lapTime, lapIndex) => {
+                    lapData.push({
+                        x: lapData.length,
+                        y: lapTime,
+                        sessionNumber: sessionNumber,
+                        sessionId: sessionId,
+                        lapNumber: lapIndex + 1
+                    });
+                    
+                    if (lapTime < bestLapEver) {
+                        if (previousBest !== null) {
+                            totalImprovement += previousBest - lapTime;
+                        }
+                        previousBest = lapTime;
+                        bestLapEver = lapTime;
+                    }
+                });
+            });
+            
+            // Calculate consistency score (lower std dev = better consistency)
+            const lapTimes = lapData.map(d => d.y);
+            const avgLapTime = lapTimes.reduce((a, b) => a + b, 0) / lapTimes.length;
+            const variance = lapTimes.reduce((sum, time) => sum + Math.pow(time - avgLapTime, 2), 0) / lapTimes.length;
+            const stdDev = Math.sqrt(variance);
+            const consistencyScore = Math.max(0, 100 - (stdDev / avgLapTime * 100));
+            
+            // Update stats
+            document.getElementById('best-lap-ever').textContent = bestLapEver === Infinity ? '-' : `${bestLapEver.toFixed(2)}s`;
+            document.getElementById('avg-improvement').textContent = totalImprovement > 0 ? `${(totalImprovement / sortedSessions.length).toFixed(2)}s` : '0s';
+            document.getElementById('consistency-score').textContent = `${consistencyScore.toFixed(1)}%`;
+            
+            // Draw chart
+            drawLapTimeChart(ctx, canvas, lapData);
+        }
+        
+        function drawLapTimeChart(ctx, canvas, lapData) {
+            // Set canvas size to match container
+            const container = canvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width - 40; // Account for padding
+            canvas.height = 400;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (lapData.length === 0) return;
+            
+            // Chart dimensions with padding
+            const padding = 60;
+            const chartWidth = canvas.width - 2 * padding;
+            const chartHeight = canvas.height - 2 * padding;
+            
+            // Find min and max values
+            const minTime = Math.min(...lapData.map(d => d.y)) * 0.95;
+            const maxTime = Math.max(...lapData.map(d => d.y)) * 1.05;
+            
+            // Scale functions
+            const xScale = (index) => padding + (index / (lapData.length - 1)) * chartWidth;
+            const yScale = (time) => padding + (1 - (time - minTime) / (maxTime - minTime)) * chartHeight;
+            
+            // Draw grid lines
+            ctx.strokeStyle = 'rgba(135, 206, 235, 0.2)';
+            ctx.lineWidth = 1;
+            
+            // Y-axis grid lines
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (i / 5) * chartHeight;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(padding + chartWidth, y);
+                ctx.stroke();
+                
+                // Y-axis labels
+                const time = minTime + (1 - i / 5) * (maxTime - minTime);
+                ctx.fillStyle = '#87CEEB';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(`${time.toFixed(1)}s`, padding - 10, y + 4);
+            }
+            
+            // Draw axes
+            ctx.strokeStyle = '#87CEEB';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            // Y-axis
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, padding + chartHeight);
+            // X-axis
+            ctx.lineTo(padding + chartWidth, padding + chartHeight);
+            ctx.stroke();
+            
+            // Draw trend line (moving average)
+            if (lapData.length > 3) {
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.5)';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                
+                const windowSize = Math.min(5, Math.floor(lapData.length / 3));
+                for (let i = windowSize; i < lapData.length; i++) {
+                    const avgTime = lapData.slice(i - windowSize, i + 1)
+                        .reduce((sum, d) => sum + d.y, 0) / (windowSize + 1);
+                    const x = xScale(i);
+                    const y = yScale(avgTime);
+                    
+                    if (i === windowSize) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // Draw data line
+            ctx.strokeStyle = '#00FF00';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            lapData.forEach((point, index) => {
+                const x = xScale(index);
+                const y = yScale(point.y);
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+            
+            // Draw data points
+            const avgLapTime = lapData.reduce((sum, d) => sum + d.y, 0) / lapData.length;
+            lapData.forEach((point, index) => {
+                const x = xScale(index);
+                const y = yScale(point.y);
+                
+                // Point color based on performance
+                if (point.y === Math.min(...lapData.map(d => d.y))) {
+                    ctx.fillStyle = '#FFD700'; // Gold for best lap
+                } else if (point.y < avgLapTime) {
+                    ctx.fillStyle = '#00FF00'; // Green for above average
+                } else {
+                    ctx.fillStyle = '#FF4444'; // Red for below average
+                }
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+            
+            // Labels
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Lap Time Progression', canvas.width / 2, 30);
+            
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillText('Lap Number', canvas.width / 2, canvas.height - 10);
+            
+            // Y-axis label
+            ctx.save();
+            ctx.translate(15, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Lap Time (seconds)', 0, 0);
+            ctx.restore();
+            
+            // Redesigned compact legend
+            const legendPadding = 8;
+            const legendItemHeight = 20;
+            const legendItems = [
+                { type: 'dot', color: '#FFD700', label: 'Best Lap' },
+                { type: 'dot', color: '#00FF00', label: 'Above Avg' },
+                { type: 'dot', color: '#FF4444', label: 'Below Avg' },
+                { type: 'line', color: 'rgba(255, 215, 0, 0.5)', label: 'Trend' }
+            ];
+            
+            // Calculate legend dimensions
+            ctx.font = '10px Arial';
+            let maxTextWidth = 0;
+            legendItems.forEach(item => {
+                const textWidth = ctx.measureText(item.label).width;
+                maxTextWidth = Math.max(maxTextWidth, textWidth);
+            });
+            
+            const legendWidth = maxTextWidth + 40; // Icon + padding
+            const legendHeight = legendItems.length * legendItemHeight + legendPadding * 2;
+            const legendX = canvas.width - legendWidth - 20;
+            const legendY = padding + 10;
+            
+            // Legend background with rounded corners
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            ctx.strokeStyle = 'rgba(135, 206, 235, 0.3)';
+            ctx.lineWidth = 1;
+            
+            // Draw rounded rectangle
+            const radius = 5;
+            ctx.beginPath();
+            ctx.moveTo(legendX + radius, legendY);
+            ctx.lineTo(legendX + legendWidth - radius, legendY);
+            ctx.quadraticCurveTo(legendX + legendWidth, legendY, legendX + legendWidth, legendY + radius);
+            ctx.lineTo(legendX + legendWidth, legendY + legendHeight - radius);
+            ctx.quadraticCurveTo(legendX + legendWidth, legendY + legendHeight, legendX + legendWidth - radius, legendY + legendHeight);
+            ctx.lineTo(legendX + radius, legendY + legendHeight);
+            ctx.quadraticCurveTo(legendX, legendY + legendHeight, legendX, legendY + legendHeight - radius);
+            ctx.lineTo(legendX, legendY + radius);
+            ctx.quadraticCurveTo(legendX, legendY, legendX + radius, legendY);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Draw legend items
+            legendItems.forEach((item, index) => {
+                const itemY = legendY + legendPadding + index * legendItemHeight + 10;
+                const itemX = legendX + legendPadding;
+                
+                if (item.type === 'dot') {
+                    // Draw colored circle
+                    ctx.fillStyle = item.color;
+                    ctx.beginPath();
+                    ctx.arc(itemX + 5, itemY, 4, 0, 2 * Math.PI);
+                    ctx.fill();
+                } else if (item.type === 'line') {
+                    // Draw dashed line
+                    ctx.strokeStyle = item.color;
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([4, 2]);
+                    ctx.beginPath();
+                    ctx.moveTo(itemX, itemY);
+                    ctx.lineTo(itemX + 10, itemY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+                
+                // Draw label
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(item.label, itemX + 18, itemY + 3);
+            });
+        }
+        
         // Session management functions
         function deleteSession(sessionId, event) {
             event.stopPropagation();
@@ -740,8 +1317,6 @@
             document.body.appendChild(dialog);
         }
         
-        let sessions = {}; // Store sessions globally for management functions
-        
         function displaySessions(sessionsData) {
             sessions = sessionsData; // Store for later use
             const container = document.getElementById('sessions-container');
@@ -753,6 +1328,8 @@
                 if (!a.starred && b.starred) return 1;
                 return (b.start_time || 0) - (a.start_time || 0);
             });
+            
+            // Use the global session numbers already created
 
             if (sortedSessions.length === 0) {
                 showNoData("No race sessions found");
@@ -794,7 +1371,7 @@
                             <button class="control-btn delete-btn" onclick="deleteSession('${sessionId}', event)" title="Delete session">🗑️</button>
                         </div>
                         <div class="session-header">
-                            <div class="session-id">${sessionId}</div>
+                            <div class="session-id">Session #${globalSessionNumbers[sessionId]}</div>
                             <div class="session-status ${statusClass}">${session.status || 'unknown'}</div>
                         </div>
                         <div class="session-details">
@@ -847,12 +1424,16 @@
             container.innerHTML = html;
         }
 
+        
         function showSessionDetails(sessionId) {
             const session = sessions[sessionId];
             if (!session) {
                 console.error('Session not found:', sessionId);
                 return;
             }
+            
+            // Get session number
+            const sessionNumber = globalSessionNumbers[sessionId] || 'Unknown';
             
             // Create a detailed view overlay
             const overlay = document.createElement('div');
@@ -886,7 +1467,7 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div>
                             <h4 style="color: #87CEEB; margin-bottom: 10px;">🏎️ Session Info</h4>
-                            <p><strong>Session ID:</strong> <span style="font-family: 'Orbitron', monospace; font-size: 12px;">${sessionId}</span></p>
+                            <p><strong>Session:</strong> <span style="font-family: 'Orbitron', monospace; font-size: 16px; color: #FFD700;">#${sessionNumber}</span></p>
                             <p><strong>Status:</strong> <span class="session-status ${session.status === 'completed' ? 'status-completed' : session.status === 'active' ? 'status-active' : 'status-failed'}" style="display: inline-block; padding: 2px 8px;">${session.status || 'Unknown'}</span></p>
                             <p><strong>Start Time:</strong> ${startTime ? startTime.toLocaleString() : 'Unknown'}</p>
                             <p><strong>Duration:</strong> <span style="color: #FFD700; font-family: 'Orbitron', monospace;">${durationInSeconds.toFixed(1)} seconds</span></p>
@@ -996,6 +1577,343 @@
             container.innerHTML = `<div class="loading">${message}</div>`;
         }
 
+        // Track Visualization Functions
+        let trackMapData = null;
+        let selectedSessionId = null;
+        let selectedLapNumber = null;
+        
+        function initTrackVisualization(sessionsData, sessionNumbersMap) {
+            console.log('initTrackVisualization - sessionNumbersMap:', sessionNumbersMap);
+            const sessionSelect = document.getElementById('session-select');
+            const lapSelect = document.getElementById('lap-select');
+            
+            // Clear existing options
+            sessionSelect.innerHTML = '<option value="">Select a session...</option>';
+            lapSelect.innerHTML = '<option value="">Select a lap...</option>';
+            
+            // Populate session dropdown with sessions that have lap data
+            Object.entries(sessionsData)
+                .filter(([_, session]) => session.laps && Object.keys(session.laps).length > 0)
+                .forEach(([sessionId, session]) => {
+                    const option = document.createElement('option');
+                    option.value = sessionId;
+                    const sessionNumber = sessionNumbersMap[sessionId] || 'Unknown';
+                    const lapCount = Object.keys(session.laps || {}).length;
+                    option.textContent = `Session #${sessionNumber} - ${lapCount} laps`;
+                    console.log(`Session ${sessionId} -> #${sessionNumber}`);
+                    sessionSelect.appendChild(option);
+                });
+            
+            // Handle session selection
+            sessionSelect.addEventListener('change', (e) => {
+                selectedSessionId = e.target.value;
+                if (selectedSessionId && sessionsData[selectedSessionId]) {
+                    populateLapDropdown(sessionsData[selectedSessionId]);
+                } else {
+                    lapSelect.innerHTML = '<option value="">Select a lap...</option>';
+                    clearTrackMap();
+                }
+            });
+            
+            // Handle lap selection
+            lapSelect.addEventListener('change', (e) => {
+                selectedLapNumber = e.target.value;
+                if (selectedSessionId && selectedLapNumber && sessionsData[selectedSessionId]) {
+                    const session = sessionsData[selectedSessionId];
+                    if (session.laps && session.laps[`lap_${selectedLapNumber}`]) {
+                        const lap = session.laps[`lap_${selectedLapNumber}`];
+                        if (lap && lap.position_samples) {
+                            drawTrackMap(lap.position_samples, lap);
+                        }
+                    }
+                }
+            });
+        }
+        
+        function populateLapDropdown(session) {
+            const lapSelect = document.getElementById('lap-select');
+            lapSelect.innerHTML = '<option value="">Select a lap...</option>';
+            
+            if (!session || !session.laps) return;
+            
+            // Get lap numbers and sort them
+            const lapNumbers = Object.keys(session.laps)
+                .map(key => parseInt(key.replace('lap_', '')))
+                .filter(num => !isNaN(num))
+                .sort((a, b) => a - b);
+            
+            lapNumbers.forEach(lapNum => {
+                const lap = session.laps[`lap_${lapNum}`];
+                const option = document.createElement('option');
+                option.value = lapNum;
+                const lapTime = lap.duration ? ` - ${lap.duration.toFixed(2)}s` : '';
+                const status = lap.completed ? '✅' : '❌';
+                option.textContent = `Lap ${lapNum}${lapTime} ${status}`;
+                lapSelect.appendChild(option);
+            });
+        }
+        
+        function drawTrackMap(positionSamples, lapData) {
+            const canvas = document.getElementById('track-map-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            const container = canvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width - 40;
+            canvas.height = 600;
+            
+            // Clear canvas
+            ctx.fillStyle = '#0a1628';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (!positionSamples || positionSamples.length < 2) {
+                ctx.fillStyle = '#FFD700';
+                ctx.font = '18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No position data available for this lap', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+            
+            // Find bounds
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+            
+            positionSamples.forEach(sample => {
+                minX = Math.min(minX, sample.x);
+                maxX = Math.max(maxX, sample.x);
+                minY = Math.min(minY, sample.y);
+                maxY = Math.max(maxY, sample.y);
+            });
+            
+            // Add padding
+            const padding = 40;
+            const scaleX = (canvas.width - 2 * padding) / (maxX - minX);
+            const scaleY = (canvas.height - 2 * padding) / (maxY - minY);
+            const scale = Math.min(scaleX, scaleY) * 0.9;
+            
+            // Center the track
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const trackCenterX = (minX + maxX) / 2;
+            const trackCenterY = (minY + maxY) / 2;
+            
+            // Transform function
+            const transform = (x, y) => {
+                return {
+                    x: centerX + (x - trackCenterX) * scale,
+                    y: centerY - (y - trackCenterY) * scale  // Flip Y axis
+                };
+            };
+            
+            // Control mode colors
+            const modeColors = {
+                'VISION': '#00FF00',
+                'TURBO': '#FFD700',
+                'TURNING': '#FF4444',
+                'RACING': '#4169E1',
+                'WAYPOINT': '#888888',
+                'STOPPED': '#333333',
+                'UNKNOWN': '#666666'
+            };
+            
+            // First draw track outline in grey
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 12;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            
+            positionSamples.forEach((sample, index) => {
+                const p = transform(sample.x, sample.y);
+                if (index === 0) {
+                    ctx.moveTo(p.x, p.y);
+                } else {
+                    ctx.lineTo(p.x, p.y);
+                }
+            });
+            ctx.stroke();
+            
+            // Then draw control mode colored path on top
+            ctx.lineWidth = 8;
+            
+            for (let i = 1; i < positionSamples.length; i++) {
+                const prev = positionSamples[i - 1];
+                const curr = positionSamples[i];
+                
+                const p1 = transform(prev.x, prev.y);
+                const p2 = transform(curr.x, curr.y);
+                
+                // Get control mode color
+                const mode = curr.control_mode || 'UNKNOWN';
+                ctx.strokeStyle = modeColors[mode];
+                
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+            }
+            
+            // Draw start/finish markers
+            if (positionSamples.length > 0) {
+                // Start marker (green circle)
+                const start = transform(positionSamples[0].x, positionSamples[0].y);
+                ctx.fillStyle = '#00FF00';
+                ctx.beginPath();
+                ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('S', start.x, start.y);
+                
+                // Finish marker (checkered flag pattern)
+                const finish = transform(positionSamples[positionSamples.length - 1].x, positionSamples[positionSamples.length - 1].y);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(finish.x - 10, finish.y - 10, 20, 20);
+                ctx.fillStyle = '#000000';
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        if ((i + j) % 2 === 0) {
+                            ctx.fillRect(finish.x - 10 + i * 5, finish.y - 10 + j * 5, 5, 5);
+                        }
+                    }
+                }
+            }
+            
+            // Update track statistics and legend
+            updateTrackStats(positionSamples, lapData);
+            updateLegendWithSpeed(positionSamples);
+            
+            // Show lap time in top-left
+            if (lapData.duration) {
+                document.getElementById('track-lap-time-display').style.display = 'block';
+                document.getElementById('track-lap-time-value').textContent = lapData.duration.toFixed(2) + 's';
+            }
+            
+            // Calculate and show max speed in bottom-right
+            const speeds = positionSamples.map(sample => sample.speed || 0).filter(speed => speed > 0);
+            if (speeds.length > 0) {
+                const maxSpeed = Math.max(...speeds);
+                document.getElementById('track-max-speed-display').style.display = 'block';
+                document.getElementById('track-max-speed-value').textContent = maxSpeed.toFixed(1) + ' m/s';
+            }
+        }
+        
+        function updateTrackStats(positionSamples, lapData) {
+            const statsContainer = document.getElementById('track-stats');
+            
+            // Calculate control mode usage
+            const modeCount = {};
+            positionSamples.forEach(sample => {
+                const mode = sample.control_mode || 'UNKNOWN';
+                modeCount[mode] = (modeCount[mode] || 0) + 1;
+            });
+            
+            // Calculate percentages
+            const total = positionSamples.length;
+            const modePercentages = {};
+            Object.entries(modeCount).forEach(([mode, count]) => {
+                modePercentages[mode] = ((count / total) * 100).toFixed(1);
+            });
+            
+            // Display statistics
+            let statsHTML = '';
+            
+            // Add control mode percentages
+            const modePriority = ['VISION', 'TURBO', 'RACING', 'TURNING', 'WAYPOINT'];
+            modePriority.forEach(mode => {
+                if (modePercentages[mode]) {
+                    statsHTML += `
+                        <div class="track-stat">
+                            <div class="track-stat-label">${mode} Mode</div>
+                            <div class="track-stat-value">${modePercentages[mode]}%</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            
+            statsContainer.innerHTML = statsHTML;
+        }
+        
+        function clearTrackMap() {
+            const canvas = document.getElementById('track-map-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#0a1628';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            document.getElementById('track-stats').innerHTML = '';
+            document.getElementById('track-lap-time-display').style.display = 'none';
+            document.getElementById('track-max-speed-display').style.display = 'none';
+        }
+        
+        function updateLegendWithSpeed(positionSamples) {
+            // Calculate average speed for each control mode
+            const modeData = {};
+            
+            positionSamples.forEach(sample => {
+                const mode = sample.control_mode || 'UNKNOWN';
+                const speed = sample.speed || 0;
+                
+                if (!modeData[mode]) {
+                    modeData[mode] = {
+                        speeds: [],
+                        count: 0
+                    };
+                }
+                
+                if (speed > 0) {  // Only include non-zero speeds
+                    modeData[mode].speeds.push(speed);
+                    modeData[mode].count++;
+                }
+            });
+            
+            // Calculate averages
+            const modeAverages = {};
+            Object.entries(modeData).forEach(([mode, data]) => {
+                if (data.speeds.length > 0) {
+                    const avgSpeed = data.speeds.reduce((a, b) => a + b, 0) / data.speeds.length;
+                    modeAverages[mode] = avgSpeed;
+                    console.log(`Mode ${mode}: ${data.speeds.length} samples, avg speed: ${avgSpeed.toFixed(2)} m/s`);
+                }
+            });
+            
+            // Mode colors and display names
+            const modeInfo = {
+                'VISION': { color: '#00FF00', name: 'Vision Mode' },
+                'TURBO': { color: '#FFD700', name: 'Turbo Mode' },
+                'TURNING': { color: '#FF4444', name: 'Turning Mode' },
+                'RACING': { color: '#4169E1', name: 'Racing Mode' },
+                'WAYPOINT': { color: '#888888', name: 'Waypoint Mode' },
+                'STOPPED': { color: '#333333', name: 'Stopped' },
+                'UNKNOWN': { color: '#666666', name: 'Unknown' }
+            };
+            
+            // Build legend HTML
+            const legendContainer = document.getElementById('track-legend');
+            let legendHTML = '<div class="track-legend-title">Control Modes</div>';
+            
+            const modePriority = ['VISION', 'TURBO', 'RACING', 'TURNING', 'WAYPOINT'];
+            modePriority.forEach(mode => {
+                if (modeAverages[mode] !== undefined) {
+                    const info = modeInfo[mode];
+                    const avgSpeed = modeAverages[mode];
+                    legendHTML += `
+                        <div class="track-legend-item">
+                            <div class="track-legend-mode">
+                                <span class="track-legend-color" style="background: ${info.color};"></span>
+                                <span>${info.name}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            legendContainer.innerHTML = legendHTML;
+        }
+        
         // Make functions available globally
         window.loadAnalytics = loadAnalytics;
         window.deleteSession = deleteSession;
@@ -1004,10 +1922,18 @@
         window.saveNotesFromInput = saveNotesFromInput;
         window.showSessionDetails = showSessionDetails;
 
+        
         // Initialize on page load
         window.addEventListener('load', () => {
             initFirebase();
             loadAnalytics();
+        });
+        
+        // Redraw charts on window resize
+        window.addEventListener('resize', () => {
+            if (currentSessionsData) {
+                updatePerformanceTrends(currentSessionsData);
+            }
         });
     </script>
 </body>
