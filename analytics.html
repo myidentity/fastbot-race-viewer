@@ -896,14 +896,14 @@
                     }
                     
                     // Create session numbers mapping first
+                    // Sort sessions by start_time (oldest first) to assign sequential numbers
                     const sortedSessionsForNumbers = Object.entries(sessions).sort(([,a], [,b]) => {
-                        if (a.starred && !b.starred) return -1;
-                        if (!a.starred && b.starred) return 1;
-                        return (b.start_time || 0) - (a.start_time || 0);
+                        return (a.start_time || 0) - (b.start_time || 0);
                     });
                     
+                    // Assign numbers sequentially (oldest = 1, newest = highest)
                     sortedSessionsForNumbers.forEach(([sessionId], index) => {
-                        globalSessionNumbers[sessionId] = sortedSessionsForNumbers.length - index;
+                        globalSessionNumbers[sessionId] = index + 1;
                     });
                     
                     displaySessions(sessions);
