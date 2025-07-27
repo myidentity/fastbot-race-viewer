@@ -39,17 +39,23 @@
             position: relative;
         }
         
-        .monaco-crown {
-            font-size: 2.5em;
-            color: #FFD700;
-            text-shadow: 0 0 30px #FFD700;
-            margin-bottom: 10px;
-            animation: royal-glow 3s ease-in-out infinite;
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
         }
         
-        @keyframes royal-glow {
-            0%, 100% { text-shadow: 0 0 30px #FFD700, 0 0 40px #FFD700; }
-            50% { text-shadow: 0 0 40px #FFD700, 0 0 60px #FFD700, 0 0 80px #FFD700; }
+        .helmet-image {
+            width: 60px;
+            height: 60px;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+            animation: helmet-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes helmet-glow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6)); }
+            50% { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 40px rgba(255, 215, 0, 0.4)); }
         }
         
         .header h1 {
@@ -358,7 +364,7 @@
             }
             
             /* Enhanced yellow/gold colors */
-            .monaco-crown,
+            .helmet-image,
             #video-feed,
             .telemetry-card {
                 border-color: #FFD700 !important;
@@ -395,9 +401,13 @@
 </head>
 <body>
     <div class="header">
-        <div class="monaco-crown">👑</div>
-        <h1>MARIOKART</h1>
-        <div class="monaco-subtitle">FASTBOT RACING MONITOR</div>
+        <div class="header-content">
+            <img src="helmet.png" alt="Racing Helmet" class="helmet-image">
+            <div>
+                <h1>MARIOKART</h1>
+                <div class="monaco-subtitle">FASTBOT RACING MONITOR</div>
+            </div>
+        </div>
         <div class="monaco-flag">🏁</div>
     </div>
     
